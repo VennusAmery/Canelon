@@ -40,7 +40,16 @@ export default function FAQ() {
             })}
           </div>
 
-          <img src="/images/THINK2.gif" alt="" className="faq-gif" />
+            <video
+              src="/images/think.mp4"
+              aria-label="Animación dudas frecuentes"
+              className="faq-giff"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+
         </div>
       </div>
     </section>
