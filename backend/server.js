@@ -10,7 +10,7 @@ import ordersRoutes from "./routes/orders.js";
 import adminPedidosRoutes from "./routes/adminPedidos.js";
 import adminMetricasRoutes from "./routes/adminMetricas.js";
 import contactoRoutes from "./routes/contacto.js";
-
+import "express-async-errors";
 import fs from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,6 +48,11 @@ if (fs.existsSync(FRONT_DIR)) {
     res.sendFile(path.join(FRONT_DIR, "index.html"));
   });
 }
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Error interno del servidor." });
+});
 
 app.listen(PORT, () => {
   console.log(`API de Canelon corriendo en http://localhost:${PORT}`);
