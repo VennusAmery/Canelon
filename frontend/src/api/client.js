@@ -1,7 +1,9 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "http://localhost:4000/api" : "/api");
 
 // Origen del backend sin el sufijo /api, para armar URLs de imágenes
-// (ej. http://localhost:4000/images/alfajores.jpg)
+// En producción queda como "" (mismo dominio), en desarrollo http://localhost:4000
 export const API_ORIGIN = BASE_URL.replace(/\/api\/?$/, "");
 
 async function request(path, options = {}) {
