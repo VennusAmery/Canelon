@@ -1,6 +1,13 @@
 //conexion mysql
-import 'dotenv/config'; 
+import 'dotenv/config';
 import mysql from "mysql2/promise";
+
+let ssl;
+if (process.env.DB_CA) {
+  ssl = { ca: process.env.DB_CA.replace(/\\n/g, "\n"), rejectUnauthorized: true };
+} else if (process.env.DB_SSL === "true") {
+  ssl = { rejectUnauthorized: false };
+}
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -10,4 +17,5 @@ export const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
+  ssl,
 });

@@ -4,6 +4,10 @@ backend/node_modules/
 .pnpm/
 
 backend/db/schema.sql
+backend/scripts/
+backend/scripts/createAdmin.js
+backend/scripts/seedMenu.js
+backend/scripts/seedVentas.js
 
 # Archivos de entorno y secretos
 .env

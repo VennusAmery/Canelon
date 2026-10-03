@@ -8,6 +8,7 @@ import { pool } from "../lib/db.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const COMPROBANTES_DIR = path.join(__dirname, "../public/comprobantes");
+fs.mkdirSync(COMPROBANTES_DIR, { recursive: true });
 
 const router = Router();
 
