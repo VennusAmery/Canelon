@@ -1,0 +1,124 @@
+:root {
+  --masa: #fbf3e4;      /* fondo principal, claro */
+  --manteca: #f3dfa8;   /* superficie secundaria clara */
+  --azucar: #fffdf8;    /* tarjetas */
+  --canela: #b9793f;    /* acento principal */
+  --miel: #d98f3b;      /* CTA / hover */
+  --cafe: #3a2a1e;      /* texto / detalles oscuros */
+  --cafe-suave: #5c4632;
+  --linea: rgba(58, 42, 30, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--masa);
+  color: var(--cafe);
+  font-family: "Manrope", sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Fraunces", serif;
+  margin: 0;
+  color: var(--cafe);
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+section {
+  padding: 96px 0;
+}
+
+.section-head {
+  max-width: 620px;
+  margin-bottom: 48px;
+}
+
+.section-head .kicker {
+  color: var(--canela);
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 12px;
+}
+
+.section-head h2 {
+  font-size: clamp(30px, 3.6vw, 42px);
+  line-height: 1.15;
+}
+
+.section-head p {
+  margin-top: 14px;
+  font-size: 17px;
+  color: var(--cafe-suave);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  border-radius: 30px 8px 30px 8px;
+  font-weight: 700;
+  font-size: 15px;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--miel);
+  color: var(--azucar);
+}
+
+.btn-primary:hover {
+  background: var(--canela);
+}
+
+.btn-outline {
+  border-color: var(--cafe);
+  color: var(--cafe);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: rgba(58, 42, 30, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

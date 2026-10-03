@@ -1,0 +1,119 @@
+.cum-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 42, 30, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.cum-modal {
+  position: relative;
+  background: var(--azucar, #fffaf2);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: cum-pop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cum-pop {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cum-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--cafe-suave, #7a6a5c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cum-close:hover { background: #f1ede6; }
+
+.cum-modal h2 {
+  font-family: "Fraunces", serif;
+  font-size: 20px;
+  color: var(--cafe, #3a2a1e);
+  margin: 0 0 22px;
+  padding-right: 24px;
+}
+
+.cum-modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.cum-modal label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cafe, #3a2a1e);
+  margin-bottom: 16px;
+}
+
+.cum-modal input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid #e5d8c3;
+  border-radius: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+.cum-modal input:focus {
+  outline: none;
+  border-color: var(--miel, #e0913c);
+}
+
+.cum-error {
+  color: #b5651d;
+  font-size: 13px;
+  margin: -8px 0 16px;
+}
+
+.cum-success {
+  color: #2f7a3f;
+  font-size: 14.5px;
+  background: #eaf6ec;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin: 0;
+}
+
+.cum-modal button[type="submit"] {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 14.5px;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.cum-modal button[type="submit"]:hover {
+  background: var(--canela, #b5651d);
+  transform: translateY(-1px);
+}
+.cum-modal button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}

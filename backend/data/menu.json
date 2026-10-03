@@ -1,0 +1,207 @@
+[
+  {
+    "categoria": "Cakes",
+    "nombre": "Pastel personalizado",
+    "descripcion": "Precio base con crema batida. Personaliza masa, relleno, cobertura y decoración.",
+    "personalizable": true,
+    "variantes": [
+      { "nombre": "Mini", "detalle": "2 a 4 porciones", "precio": 85 },
+      { "nombre": "Pequeño", "detalle": "4 a 6 porciones", "precio": 105 },
+      { "nombre": "Chico", "detalle": "6 a 8 porciones", "precio": 130 },
+      { "nombre": "Medio", "detalle": "10 a 12 porciones", "precio": 160 },
+      { "nombre": "Mediano", "detalle": "13 a 15 porciones", "precio": 215 },
+      { "nombre": "Grande", "detalle": "16 a 20 porciones", "precio": 250 }
+    ],
+    "opciones": [
+      { "grupo": "masa", "nombre": "Vainilla", "precio_extra": 0, "imagen": "/images/Pastel4.jpeg"  },
+      { "grupo": "masa", "nombre": "Red velvet", "precio_extra": 20, "imagen": "/images/Pastel.jpeg"  },
+      { "grupo": "masa", "nombre": "Vainilla y chispas", "precio_extra": 20, "imagen": "/images/Pastel3.jpeg"  },
+      { "grupo": "masa", "nombre": "Chocolate y chispas", "precio_extra": 20, "imagen": "/images/Pastel6.jpg"  },
+      { "grupo": "masa", "nombre": "Chocolate", "precio_extra": 20, "imagen": "/images/Pastel6.jpeg"  },
+      { "grupo": "masa", "nombre": "Amapola", "precio_extra": 20, "imagen": "/images/Pastel4.jpeg"  },
+      { "grupo": "masa", "nombre": "Birthday", "precio_extra": 20, "imagen": "/images/Pastel3.jpeg"  },
+      { "grupo": "masa", "nombre": "Zanahoria", "precio_extra": 20, "imagen": "/images/Pastel5.jpeg"  },
+
+      { "grupo": "relleno", "nombre": "Jalea de fresa", "precio_extra": 0 },
+      { "grupo": "relleno", "nombre": "Dulce de leche", "precio_extra": 0 },
+      { "grupo": "relleno", "nombre": "Crema pastelera", "precio_extra": 0 },
+      { "grupo": "relleno", "nombre": "Cookies and cream", "precio_extra": 20 },
+      { "grupo": "relleno", "nombre": "Nutella", "precio_extra": 20 },
+      { "grupo": "relleno", "nombre": "Betún de queso crema", "precio_extra": 20 },
+      { "grupo": "relleno", "nombre": "Ganache oscuro", "precio_extra": 20 },
+      { "grupo": "relleno", "nombre": "Ganache blanco", "precio_extra": 20 },
+      { "grupo": "relleno", "nombre": "Fresas con crema", "precio_extra": 20 },
+
+      { "grupo": "cobertura", "nombre": "Crema batida", "precio_extra": 0 },
+      { "grupo": "cobertura", "nombre": "Buttercream de merengue suizo", "precio_extra": 20, "precio_extra_tamano_grande": 30 },
+      { "grupo": "cobertura", "nombre": "Ganache oscuro", "precio_extra": 20, "precio_extra_tamano_grande": 30 },
+      { "grupo": "cobertura", "nombre": "Ganache blanco", "precio_extra": 20, "precio_extra_tamano_grande": 30 },
+
+      { "grupo": "decoracion", "nombre": "Básica", "precio_extra": 0 },
+      { "grupo": "decoracion", "nombre": "Elaborada", "precio_extra": 20 },
+
+      { "grupo": "extra", "nombre": "Imagen en papel fotográfico", "precio_extra": 10 },
+      { "grupo": "extra", "nombre": "Cake topper tradicional", "precio_extra": 8 }
+    ]
+  },
+  {
+    "categoria": "Trenzas",
+    "nombre": "Trenza Canelón",
+    "descripcion": "Rellena de canela y azúcar",
+    "precio": 105,
+     "imagen": "/images/Trenzas.jpeg",
+    "opciones": [
+      { "grupo": "extra", "nombre": "Nueces o salsa", "precio_extra": 15 }
+    ]
+  },
+  {
+    "categoria": "Trenzas",
+    "nombre": "Trenza Avellana",
+    "descripcion": "Rellena de crema de avellana",
+    "precio": 135,
+     "imagen": "/images/Trenzas.jpeg",
+    "opciones": [
+      { "grupo": "extra", "nombre": "Nueces o salsa", "precio_extra": 15 }
+    ]
+  },
+  {
+    "categoria": "Trenzas",
+    "nombre": "Trenza Queso",
+    "descripcion": "Rellena de jamón y queso",
+    "precio": 155,
+     "imagen": "/images/Trenzas.jpeg",
+    "opciones": [
+      { "grupo": "extra", "nombre": "Nueces o salsa", "precio_extra": 15 }
+    ]
+  },
+  {
+    "categoria": "Roles",
+    "nombre": "Roles de Canela",
+     "imagen": "/images/Roles.jpeg",
+    "variantes": [
+      { "nombre": "4 unidades", "precio": 105 },
+      { "nombre": "6 unidades", "precio": 150 }
+    ]
+  },
+  {
+    "categoria": "Roles",
+    "nombre": "Roles de Avellana",
+     "imagen": "/images/Roles.jpeg",
+    "variantes": [
+      { "nombre": "4 unidades", "precio": 115 },
+      { "nombre": "6 unidades", "precio": 165 }
+    ]
+  },
+  {
+    "categoria": "Roles",
+    "nombre": "Roles de Pecanas",
+     "imagen": "/images/Roles.jpeg",
+    "variantes": [
+      { "nombre": "4 unidades", "precio": 130 },
+      { "nombre": "6 unidades", "precio": 180 }
+    ]
+  },
+  {
+    "categoria": "Zeppelines",
+    "nombre": "Zeppelin de Banano",
+     "imagen": "/images/Zeppelin de Banano.jpeg",
+    "descripcion": "Banano con avellana y chispas",
+    "precio": 60
+  },
+  {
+    "categoria": "Loaf",
+    "nombre": "Loaf de Limón",
+     "imagen": "/images/Loaf de Limón.jpeg",
+    "descripcion": "8 a 10 porciones, con glaseado",
+    "precio": 85
+  },
+  {
+    "categoria": "Loaf",
+    "nombre": "Loaf de Zanahoria",
+     "imagen": "/images/Loaf de Limón.jpeg",
+    "descripcion": "8 a 10 porciones, con nueces y glaseado",
+    "precio": 90
+  },
+  {
+    "categoria": "Tres Leches",
+    "nombre": "Tres Leches de Vainilla",
+     "imagen": "/images/Tres Leches.jpeg",
+    "variantes": [
+      { "nombre": "Circular", "detalle": "8 a 10 porciones", "precio": 150 },
+      { "nombre": "Rectangular", "detalle": "12 a 14 porciones", "precio": 210 }
+    ]
+  },
+  {
+    "categoria": "Tres Leches",
+    "nombre": "Tres Leches de Chocolate",
+     "imagen": "/images/Tres Leches.jpeg",
+    "variantes": [
+      { "nombre": "Circular", "detalle": "8 a 10 porciones", "precio": 180 },
+      { "nombre": "Rectangular", "detalle": "12 a 14 porciones", "precio": 240 }
+    ]
+  },
+  {
+    "categoria": "Alfajores",
+    "nombre": "Alfajores",
+     "imagen": "/images/Pie de Manzana.jpeg",
+    "variantes": [
+      { "nombre": "6 unidades", "precio": 55 },
+      { "nombre": "12 unidades", "precio": 105 },
+      { "nombre": "18 unidades", "precio": 155 },
+      { "nombre": "24 unidades", "precio": 200 }
+    ]
+  },
+  {
+    "categoria": "Pies",
+    "nombre": "Pie de Manzana",
+    "descripcion": "6 a 8 porciones",
+    "precio": 110,
+     "imagen": "/images/Pie de Manzana.jpeg"
+  },
+  {
+    "categoria": "Pies",
+    "nombre": "Pie de Queso",
+    "descripcion": "6 a 8 porciones",
+     "imagen": "/images/Pie de Queso.jpeg",
+    "precio": 130
+  },
+  {
+    "categoria": "Pies",
+    "nombre": "Pie de Limón",
+    "descripcion": "6 a 8 porciones",
+     "imagen": "/images/Pie de Limón.jpeg",
+    "precio": 145
+  },
+  {
+    "categoria": "Donitas",
+    "nombre": "Donitas",
+     "imagen": "/images/Gelatina Mosaico.jpeg",
+    "variantes": [
+      { "nombre": "4 unidades", "precio": 55 },
+      { "nombre": "6 unidades", "precio": 80 },
+      { "nombre": "8 unidades", "precio": 105 },
+      { "nombre": "12 unidades", "precio": 150 },
+      { "nombre": "20 unidades", "precio": 235 }
+    ]
+  },
+  {
+    "categoria": "Fresas Cubiertas",
+    "nombre": "Fresas Cubiertas",
+     "imagen": "/images/Gelatina Mosaico.jpeg",
+    "variantes": [
+      { "nombre": "6 unidades", "detalle": "3 toppings", "precio": 50 },
+      { "nombre": "12 unidades", "detalle": "4 toppings", "precio": 90 },
+      { "nombre": "24 unidades", "detalle": "6 toppings", "precio": 170 }
+    ]
+  },
+  {
+    "categoria": "Mosaico",
+    "nombre": "Gelatina Mosaico",
+     "imagen": "/images/Gelatina Mosaico.jpeg",
+    "variantes": [
+      { "nombre": "10 a 12 porciones", "detalle": "3 sabores", "precio": 160 },
+      { "nombre": "16 a 18 porciones", "detalle": "3 sabores", "precio": 220 },
+      { "nombre": "20 a 22 porciones", "detalle": "4 sabores", "precio": 245 }
+    ]
+  }
+]

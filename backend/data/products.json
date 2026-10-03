@@ -1,0 +1,65 @@
+[
+  { "id": "alfajores", 
+    "nombre": "Alfajores", 
+    "desc": "Rellenos de manjar, con el toque casero de siempre.", 
+    "precio": 15, 
+    "image": "/images/1.jpg" 
+  },
+
+  { "id": "galletas", 
+    "nombre": "Galletas", 
+    "desc": "Crocantes o suaves, ideales para acompañar un café.", 
+    "precio": 10, 
+    "image": "/images/1.jpg" 
+  },
+
+  { "id": "trenzas", 
+  "nombre": "Trenzas", 
+  "desc": "Pan dulce trenzado, horneado fresco cada mañana.", 
+  "precio": 20, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "roles-canela", 
+  "nombre": "Roles de canela", 
+  "desc": "Esponjosos, con canela y un glaseado suave.", 
+  "precio": 18, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "pasteles-tradicionales", 
+  "nombre": "Pasteles tradicionales", 
+  "desc": "Los sabores de toda la vida, hechos a mano.", 
+  "precio": 120, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "pasteles-personalizados", 
+  "nombre": "Pasteles fríos y personalizados", 
+  "desc": "Diseñados a tu gusto para cada celebración.", 
+  "precio": 180, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "masa-madre", 
+  "nombre": "Pan de masa madre", 
+  "desc": "Fermentación lenta, corteza dorada, miga suave.", 
+  "precio": 35, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "panes-tradicionales", 
+  "nombre": "Panes tradicionales", 
+  "desc": "El pan de cada día, horneado con dedicación.", 
+  "precio": 8, 
+  "image": "/images/1.jpg" 
+},
+
+  { "id": "alta-reposteria", 
+  "nombre": "Alta repostería", 
+  "desc": "Postres finos pensados para ocasiones especiales.", 
+  "precio": 45, 
+  "image": "/images/1.jpg" 
+}
+
+]

@@ -1,0 +1,51 @@
+.social-section { 
+  background: #402B1C; 
+}
+
+.social-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.social-inner .section-head h2 { color: var(--masa); }
+.social-inner .section-head p { color: var(--manteca); opacity: 0.9; }
+.social-inner .kicker { color: var(--miel); }
+
+@media (max-width: 780px) {
+  .social-inner { grid-template-columns: 1fr; }
+}
+
+.social-gif {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  display: block;
+}
+
+/* ---------- Iconos de contacto (compactos, debajo del video) ---------- */
+.social-icons-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #5c4632;
+  color: var(--masa, #fdf6e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+.social-icon:hover {
+  background: var(--miel, #e0913c);
+  color: var(--cafe, #3a2a1e);
+  transform: translateY(-2px);
+}

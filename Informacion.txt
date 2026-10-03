@@ -1,0 +1,72 @@
+datos de la bd
+Usuarios
+id_usuario
+nombre_completo
+email
+contrasena
+teléfono
+rol
+direccion_entrega
+
+Productos
+tipo_producto stock_inmediato / stock o bajo_pedido
+tiempo_preparacion_dias: número de días de anticipación mínimos obligatorios
+categoría (no se que tiene pero aja)
+imagen_url
+
+Pedidos y Agenda
+pedidos:
+id_pedido
+id_cliente
+estado_pedido
+fecha_pedido / cuándo se hizo la compra
+fecha_hora_entrega_programada / fecha y hora exactas en que el cliente necesita su pedido
+tipo_entrega (pickup o a domicilio)
+monto_total
+monto_anticipo (si aja no se si trabaja asi)
+monto_pendiente
+comprobante_pago_url (eso si pero no se)
+notas_especiales (no se si pueden personalizar)
+alergias_restricciones (personalización x2)
+
+Separación de Vistas: Cliente vs. Dashboard
+Apartado del Cliente 
+Catálogo con Filtro de Disponibilidad:
+	Pestaña Disponibles Hoy (Stock actual que se horneó en el día)
+	Pestaña Para Encargo / Personalizados
+
+Bloqueo de fechas si la capacidad del día ya está llena (debe existir un limite de pedido segun yo)
+
+Cuenta usuario: o solo carrito ?
+Status en tiempo real del pedido
+Aprobando pago / anticipo
+En producción / Horneando
+Decorando / Empacando
+Listo para retiro / En camino
+
+
+Mini Dashboard 
+la chava necesita ver el negocio desde la perspectiva operativa y financiera
+
+Calendario/Agenda de Producción (Vista principal del día a día)
+Ver en un calendario interactivo qué pedidos hay que entregar hoy, mañana y esta semana
+
+Lista de Horneado / Recetas consolidadas: Un resumen diario que diga, por ejemplo para este sábado se necesitan 5 bizcochos de vainilla de 15 porciones y 3 bizcochos de chocolate de 10 porciones
+
+Gestión de Pedidos y Validación de Pagos:
+Modulo para revisar comprobantes de pago de anticipo (Aprobar / pendiente / rechazado no se)
+Cambiar de estado el pedido para enviar notificaciones automáticas al cliente (si da tiempo)
+
+Métricas clave
+Ventas Totales: Cobrado vs. Pendiente por cobrar
+Cantidad de pedidos: Divididos entre Bajo Pedido vs Stock
+Productos y Sabores más vendidos: Para saber qué se comprar en mayor cantidad.
+Horas/Días de mayor demanda nomas
+
+Preguntas  
+Cómo maneja los plazos de entrega?
+Políticas de entrega/trabajo
+Si el carrito contiene productos mixtos (uno de 2 días y uno de 5 días), el plazo del carrito lo determina el producto que requiera más tiempo 5 días? todos tienen el mismo tiempo de preparación?
+Cómo manejar pagos e ingresos? pago total de un solo o anticipo?
+maneja opciones personalizadas?
+maneja limite de pedidos al día?

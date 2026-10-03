@@ -1,0 +1,340 @@
+.pc-section {
+  background-color: #BDA08A;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,0.10) 0%, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(90,65,45,0.12) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 65%, rgba(90,65,45,0.10) 0%, transparent 50%),
+    linear-gradient(135deg, #c6ac97 0%, #b6987f 50%, #BDA08A 100%);
+  background-blend-mode: overlay, overlay, overlay, overlay, normal;
+  position: relative;
+  overflow: hidden;
+  padding: 72px 0;
+  box-sizing: border-box;
+}
+
+.pc-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.pc-section * {
+  box-sizing: border-box;
+}
+
+.pc-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Encabezado ---------- */
+.pc-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pc-kicker {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 48px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fffaf2;
+}
+
+.kicker {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1a0e02;
+}
+
+.pc-heading {
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 40px);
+  color: #fffaf2;
+  margin: 4px 0 0;
+  line-height: 1.15;
+}
+
+.pc-showall-btn {
+  border: 2px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+.pc-showall-btn:hover {
+  background: var(--cafe, #3a2a1e);
+  color: var(--azucar, #fffaf2);
+}
+.pc-showall-btn:focus-visible {
+  outline: 3px solid var(--cafe, #3a2a1e);
+  outline-offset: 3px;
+}
+
+@keyframes pc-fade-in {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pc-fade-in { animation: pc-fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .pc-fade-in { animation: none; }
+}
+
+/* ---------- Carrusel ---------- */
+.pc-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 44px;
+}
+
+.pc-track {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 34px 2px 12px;
+  flex: 1;
+  scrollbar-width: none;
+}
+.pc-track::-webkit-scrollbar { display: none; }
+
+.pc-arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--azucar, #fffaf2);
+  color: var(--cafe, #3a2a1e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(58, 42, 30, 0.2);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.pc-arrow:hover { background: var(--miel, #e0913c); color: var(--azucar, #fffaf2); transform: scale(1.06); }
+.pc-arrow:focus-visible { outline: 3px solid var(--cafe, #3a2a1e); outline-offset: 2px; }
+
+/* ---------- Tarjeta de producto ---------- */
+.pc-card {
+  scroll-snap-align: center;
+  flex: 0 0 calc((100% - 4 * 20px) / 5);
+  background: var(--azucar, #fffaf2);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(58, 42, 30, 0.12);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* La tarjeta activa */
+.pc-card-active {
+  transform: translateY(-24px) scale(1.08);
+  background: var(--miel, #e0913c);
+  box-shadow: 0 24px 40px rgba(58, 42, 30, 0.3);
+  z-index: 3;
+}
+.pc-card-active .pc-card-title,
+.pc-card-active .pc-card-desc {
+  color: var(--azucar, #fffaf2);
+}
+.pc-card-active .pc-card-price {
+  color: var(--cafe, #3a2a1e);
+}
+.pc-card-active .pc-card-add {
+  background: var(--cafe, #3a2a1e);
+}
+.pc-card-active .pc-card-add:hover {
+  background: #2a1e15;
+}
+
+.pc-card-media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--masa, #fdf6e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.pc-card-media-content {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.pc-img-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1ede6;
+  color: var(--cafe-suave, #7a6a5c);
+}
+
+.pc-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.pc-card-title {
+  font-family: "Fraunces", serif;
+  font-size: 17px;
+  color: var(--cafe, #3a2a1e);
+  margin: 0;
+  line-height: 1.2;
+  transition: color 0.3s ease;
+}
+
+.pc-card-desc {
+  font-size: 13px;
+  color: var(--cafe-suave, #7a6a5c);
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.pc-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.pc-card-price {
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--canela, #b5651d);
+  transition: color 0.3s ease;
+}
+
+.pc-card-add {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.pc-carousel:hover .pc-card-active:not(:hover) {
+  transform: none;
+  background: var(--azucar, #fffaf2);
+  box-shadow: 0 10px 24px rgba(58, 42, 30, 0.12);
+  z-index: 1;
+}
+.pc-carousel:hover .pc-card-active:not(:hover) .pc-card-title,
+.pc-carousel:hover .pc-card-active:not(:hover) .pc-card-desc {
+  color: var(--cafe, #3a2a1e);
+}
+.pc-carousel:hover .pc-card-active:not(:hover) .pc-card-price {
+  color: var(--canela, #b5651d);
+}
+.pc-carousel:hover .pc-card-active:not(:hover) .pc-card-add {
+  background: var(--miel, #e0913c);
+}
+
+/* ---------- Cuadrícula ---------- */
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 28px;
+}
+
+/* ---------- Nota inferior ---------- */
+.pc-note {
+  margin-top: 52px;
+  background: var(--cafe, #3a2a1e);
+  border-radius: 20px;
+  padding: 26px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.pc-note p {
+  color: var(--masa, #fdf6e9);
+  margin: 0;
+  font-size: 15.5px;
+  max-width: 46ch;
+}
+.pc-note-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 14.5px;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.pc-note-btn:hover {
+  background: var(--canela, #b5651d);
+  transform: translateY(-2px);
+}
+.pc-note-btn:focus-visible {
+  outline: 3px solid var(--azucar, #fffaf2);
+  outline-offset: 3px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .pc-head-row { justify-content: flex-start; }
+  .pc-kicker { font-size: 34px; }
+  .pc-card { flex: 0 0 170px; }
+  .pc-card-active { transform: translateY(-16px) scale(1.06); }
+  .pc-arrow { width: 34px; height: 34px; }
+  .pc-note { justify-content: center; text-align: center; }
+}
+@media (max-width: 700px) {
+  .pc-card:hover {
+    transform: translateY(-16px) scale(1.06);
+  }
+}

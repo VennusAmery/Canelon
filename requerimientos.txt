@@ -1,0 +1,8 @@
+pnpm install
+pnpm approve-builds
+pnpm add bcryptjs jsonwebtoken
+pnpm add react-router-dom
+pnpm add recharts
+pnpm add multer
+pnpm add pdfkit
+pnpm add nodemailer
