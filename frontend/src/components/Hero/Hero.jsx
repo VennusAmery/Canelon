@@ -1,27 +1,20 @@
 import React from "react";
-import './Hero.css';
+import "./Hero.css";
 
-export default function Hero({ onSeeMenu, onOrder }) {
+export default function Hero() {
   return (
     <header id="inicio" className="hero">
-
       <video
-        className="hero-video"
+        className="hero-bg"
         autoPlay
-        muted
         loop
+        muted
         playsInline
-        poster="/video/hero-poster.jpg"
+        preload="auto"
+        aria-label="Canelón"
       >
         <source src="/video/canelon-video.mp4" type="video/mp4" />
       </video>
-      <div className="hero-overlay" />
-
-      <div className="hero-content">
-        
-        <div className="hero-ctas">
-        </div>
-      </div>
     </header>
   );
 }
