@@ -13,7 +13,7 @@ export default function ContactForm() {
     e.preventDefault();
     setStatus("sending");
 
-    // Simulación: no se envía nada realmente
+    // no se envía nada realmente
     setTimeout(() => {
       setStatus("idle");
       setShowModal(true);

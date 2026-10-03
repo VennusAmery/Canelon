@@ -25,7 +25,7 @@ export default function Social() {
             </p>
 
             <video
-              src="/images/bye.mp4"
+              src="/images/bye.gif"
               aria-label="Animación de un pedido personalizado"
               className="social-gif"
               autoPlay
