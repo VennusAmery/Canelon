@@ -1,4 +1,5 @@
-.faq-section { background: var(--manteca); }
+.faq-section { background: #F0D79F; 
+}
 
 .faq-grid {
   display: grid;

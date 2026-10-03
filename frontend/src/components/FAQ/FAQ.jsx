@@ -43,7 +43,7 @@ export default function FAQ() {
             <video
               src="/images/think.mp4"
               aria-label="Animación dudas frecuentes"
-              className="faq-giff"
+              className="faq-gif"
               autoPlay
               loop
               muted
