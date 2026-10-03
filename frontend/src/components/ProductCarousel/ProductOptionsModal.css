@@ -1,0 +1,74 @@
+.pom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 42, 30, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.pom-modal {
+  position: relative;
+  background: var(--azucar, #fffaf2);
+  border-radius: 20px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+.pom-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  color: var(--cafe-suave);
+}
+.pom-modal h2 { font-size: 22px; padding-right: 28px; }
+.pom-desc { color: var(--cafe-suave); font-size: 14px; margin: 6px 0 0; }
+
+.pom-group { border: none; padding: 0; margin: 20px 0 0; }
+.pom-group legend {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--canela);
+  margin-bottom: 8px;
+  padding: 0;
+}
+.pom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14.5px;
+}
+.pom-row:has(input:checked) {
+  border-color: var(--miel);
+  background: rgba(217, 143, 59, 0.1);
+}
+.pom-row input { accent-color: var(--miel); }
+.pom-name { flex: 1; }
+.pom-name small { color: var(--cafe-suave); }
+.pom-price { font-weight: 700; color: var(--canela); font-size: 13.5px; }
+
+.pom-confirm {
+  width: 100%;
+  margin-top: 20px;
+  border: none;
+  border-radius: 999px;
+  padding: 13px;
+  font-weight: 700;
+  font-size: 15px;
+  background: var(--miel);
+  color: var(--azucar);
+}
+.pom-confirm:hover { background: var(--canela); }

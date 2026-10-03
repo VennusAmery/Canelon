@@ -40,6 +40,7 @@ const handleOrderSuccess = () => {
               <div className="thumb" style={{ backgroundImage: `url(${item.image})` }} />
               <div className="cart-line-info">
                 <h4>{item.nombre}</h4>
+                {item.detalle && <div className="precio-unit">{item.detalle}</div>}
                 <div className="precio-unit">Q{item.precio} c/u</div>
                 <div className="qty-control">
                   <button onClick={() => updateQty(item.id, item.qty - 1)} aria-label="Quitar uno">

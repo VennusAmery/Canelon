@@ -3,6 +3,7 @@ import { Plus, Check, ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
 import { API_ORIGIN } from "../../api/client.js";
 import { useCart } from "../../context/CartContext.jsx";
 import "./ProductCarousel.css";
+import ProductOptionsModal from "./ProductOptionsModal.jsx";
 
 const ADD_FEEDBACK_MS = 1200;
 const mediaUrl = (path) => (path ? `${API_ORIGIN}${path}` : null);
@@ -93,6 +94,7 @@ export default function ProductCarousel() {
   const rafRef = useRef(null);
   const [hoveredId, setHoveredId] = useState(null);
   const [products, setProducts] = useState([]);
+const [productoOpciones, setProductoOpciones] = useState(null);
 
   const { addItem } = useCart();
 
@@ -143,16 +145,30 @@ export default function ProductCarousel() {
     return () => window.removeEventListener("resize", handleScroll);
   }, [showAll, updateActiveIndex, handleScroll]);
 
-  const handleAdd = (product) => {
-    const precio =
-      product.precio ??
-      (product.variantes?.length ? Math.min(...product.variantes.map((v) => v.precio)) : 0);
+const flashAdded = (id) => {
+  setJustAddedId(id);
+  if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+  feedbackTimeoutRef.current = setTimeout(() => setJustAddedId(null), ADD_FEEDBACK_MS);
+};
 
-    addItem({ ...product, precio });
-    setJustAddedId(product.id);
-    if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
-    feedbackTimeoutRef.current = setTimeout(() => setJustAddedId(null), ADD_FEEDBACK_MS);
-  };
+const handleAdd = (product) => {
+  const tieneOpciones =
+    (product.variantes && product.variantes.length > 0) ||
+    (product.opciones && product.opciones.length > 0);
+
+  if (tieneOpciones) {
+    setProductoOpciones(product); // abre el modal
+    return;
+  }
+  addItem(product);
+  flashAdded(product.id);
+};
+
+const confirmarOpciones = (item) => {
+  addItem(item);
+  flashAdded(productoOpciones.id);
+  setProductoOpciones(null);
+};
 
   const scrollByCard = (dir) => {
     const track = trackRef.current;
@@ -226,6 +242,13 @@ export default function ProductCarousel() {
           </a>
         </div>
       </div>
+      {productoOpciones && (
+        <ProductOptionsModal
+          product={productoOpciones}
+          onClose={() => setProductoOpciones(null)}
+          onConfirm={confirmarOpciones}
+        />
+      )}
     </section>
   );
 }

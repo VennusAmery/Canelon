@@ -10,13 +10,21 @@ import CreateUserModal from "../components/Createuser/CreateUserModal.jsx";
 import "./AdminDashboard.css";
 
 const COLORS = ["#b5651d", "#e0913c", "#3a2a1e", "#7a6a5c", "#d9c9b7", "#8c5a3a"];
-
+const REFRESH_MS = 15000;
 
 function authFetch(path) {
   const token = localStorage.getItem("admin_token");
   return fetch(`${API_ORIGIN}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.json());
+  }).then((res) => {
+    if (res.status === 401) {
+      localStorage.removeItem("admin_token");
+      window.location.href = "/admin/login";
+      throw new Error("Sesión expirada");
+    }
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+    return res.json();
+  });
 }
 
 export default function AdminDashboard() {
@@ -28,25 +36,50 @@ export default function AdminDashboard() {
   const [error, setError] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
   const navigate = useNavigate();
+  const [lastUpdate, setLastUpdate] = useState(null);
 
 useEffect(() => {
-  Promise.all([
-    authFetch("/api/admin/ventas/resumen"),
-    authFetch("/api/admin/ventas/por-categoria"),
-    authFetch("/api/admin/ventas/por-metodo-pago"),
-    authFetch("/api/admin/ventas/por-estado"),
-  ])
-    .then(([r, cat, pago, estado]) => {
+  let activo = true;
+
+  const cargar = async () => {
+    try {
+      const [r, cat, pago, estado] = await Promise.all([
+        authFetch("/api/admin/ventas/resumen"),
+        authFetch("/api/admin/ventas/por-categoria"),
+        authFetch("/api/admin/ventas/por-metodo-pago"),
+        authFetch("/api/admin/ventas/por-estado"),
+      ]);
+      if (!activo) return;
       setResumen(r);
       setPorCategoria(cat);
       setPorMetodoPago(pago);
       setPorEstado(estado);
-    })
-    .catch((err) => {
+      setLastUpdate(new Date());
+      setError(false);
+    } catch (err) {
       console.error("Error cargando dashboard:", err);
-      setError(true);
-    })
-    .finally(() => setLoading(false));
+      if (activo) setError(true);
+    } finally {
+      if (activo) setLoading(false);
+    }
+  };
+
+  cargar(); // carga inicial
+
+  const id = setInterval(() => {
+    if (!document.hidden) cargar(); // no consulta si la pestaña está oculta
+  }, REFRESH_MS);
+
+  const alVolver = () => {
+    if (!document.hidden) cargar(); // refresca al volver a la pestaña
+  };
+  document.addEventListener("visibilitychange", alVolver);
+
+  return () => {
+    activo = false;
+    clearInterval(id);
+    document.removeEventListener("visibilitychange", alVolver);
+  };
 }, []);
 
 const handleLogout = () => {
@@ -73,6 +106,11 @@ if (error || !resumen) {
         <div>
           <p className="dash-kicker">Panel administrativo</p>
           <h1>Canelón · Resumen de ventas</h1>
+          {lastUpdate && (
+            <p className="dash-kicker" style={{ marginTop: 4, textTransform: "none" }}>
+              Actualizado a las {lastUpdate.toLocaleTimeString("es-GT")}
+            </p>
+          )}
         </div>
 
         <div style={{ display: "flex", gap: 12 }}>

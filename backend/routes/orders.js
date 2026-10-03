@@ -52,7 +52,8 @@ router.post("/", async (req, res) => {
   const saldo = total - anticipo;
   const orderId = crypto.randomUUID();
   const codigoTransaccion = crypto.randomBytes(4).toString("hex").toUpperCase();
-
+  const productIds = items.map((i) => i.productId || i.id);
+  
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
@@ -78,7 +79,7 @@ router.post("/", async (req, res) => {
     for (const item of items) {
       await conn.query(
         `INSERT INTO order_items (order_id, product_id, nombre, precio, qty) VALUES (?, ?, ?, ?, ?)`,
-        [orderId, item.id, item.nombre, item.precio, item.qty]
+        [orderId, item.productId || item.id, item.nombre, item.precio, item.qty]
       );
     }
 
