@@ -11,6 +11,8 @@ import adminPedidosRoutes from "./routes/adminPedidos.js";
 import adminMetricasRoutes from "./routes/adminMetricas.js";
 import contactoRoutes from "./routes/contacto.js";
 
+import fs from "fs";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -29,9 +31,23 @@ app.use("/api/admin/pedidos", adminPedidosRoutes);
 app.use("/api/admin/metricas", adminMetricasRoutes);
 app.use("/api/contacto", contactoRoutes);
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({ ok: true, message: "API de Canelon funcionando." });
 });
+
+// ---------- Frontend compilado ----------
+const FRONT_DIR = path.join(__dirname, "public-app");
+if (fs.existsSync(FRONT_DIR)) {
+  app.use(express.static(FRONT_DIR));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") ||
+        req.path.startsWith("/images") ||
+        req.path.startsWith("/comprobantes")) {
+      return next();
+    }
+    res.sendFile(path.join(FRONT_DIR, "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`API de Canelon corriendo en http://localhost:${PORT}`);
