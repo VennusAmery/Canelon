@@ -1,0 +1,122 @@
+/* Layout contenedor para alinear tarjeta e imagen */
+.users-layout {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 1000px;
+}
+
+.users-card {
+  flex: 1;
+  max-width: 480px;
+  padding: 28px 30px 30px;
+}
+
+.users-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.users-illustration {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.06));
+}
+
+/* Ajuste para pantallas pequeñas / móviles */
+@media (max-width: 850px) {
+  .users-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .users-image-container {
+    width: 100%;
+  }
+
+  .users-illustration {
+    max-width: 280px;
+  }
+}
+
+.users-card h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.users-hint {
+  color: var(--cafe-suave, #5c4632);
+  font-size: 13.5px;
+  margin: 0 0 22px;
+}
+
+.users-card form {
+  display: flex;
+  flex-direction: column;
+}
+.users-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cafe, #3a2a1e);
+  margin-bottom: 16px;
+}
+.users-card input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid #e5d8c3;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+.users-card input:focus {
+  outline: none;
+  border-color: var(--miel, #e0913c);
+}
+
+.users-error {
+  color: #b5651d;
+  font-size: 13px;
+  margin: -4px 0 14px;
+}
+.users-success {
+  color: #2f7a3f;
+  font-size: 14px;
+  background: #eaf6ec;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin: 0 0 14px;
+}
+
+.users-card button[type="submit"] {
+  align-self: flex-start;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-weight: 700;
+  font-size: 14.5px;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.users-card button[type="submit"]:hover {
+  background: var(--canela, #b5651d);
+  transform: translateY(-1px);
+}
+.users-card button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}

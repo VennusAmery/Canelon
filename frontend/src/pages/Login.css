@@ -5,6 +5,7 @@
   justify-content: center;
   background: var(--cafe, #3a2a1e);
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .login-card {
@@ -12,8 +13,9 @@
   border-radius: 20px;
   padding: 40px;
   width: 100%;
-  max-width: 380px;
+  max-width: 475px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
 }
 
 .login-card h1 {
@@ -37,31 +39,105 @@
   margin-bottom: 16px;
 }
 
+/* INPUTS */
 .login-card input {
   display: block;
   width: 100%;
+  height: 48px;
   margin-top: 6px;
   padding: 10px 12px;
   border: 1px solid #e5d8c3;
   border-radius: 10px;
   font-size: 14px;
+  background: #fff;
+  color: var(--cafe, #3a2a1e);
+  outline: none;
+  box-sizing: border-box;
 }
 
+.login-card input:focus {
+  border-color: var(--miel, #e0913c);
+}
+
+/* CONTENEDOR DE CONTRASEÑA */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* INPUT DE CONTRASEÑA */
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+/* BOTÓN DEL OJO */
+.toggle-password-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  width: 30px !important;
+  height: 30px;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50% !important;
+
+  color: var(--cafe-suave, #8a735c);
+  cursor: pointer;
+
+  box-shadow: none !important;
+}
+
+.toggle-password-btn:hover {
+  background: transparent !important;
+  color: var(--miel, #e0913c);
+}
+
+.toggle-password-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* BOTÓN INGRESAR */
+.login-card > button[type="submit"] {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 12px;
+  margin-top: 4px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.login-card > button[type="submit"]:hover {
+  background: var(--canela, #b5651d);
+}
+
+.login-card > button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ERROR */
 .login-error {
   color: #b5651d;
   font-size: 13px;
   margin: -8px 0 16px;
 }
-
-.login-card button {
-  width: 100%;
-  border: none;
-  border-radius: 999px;
-  padding: 12px;
-  font-weight: 700;
-  background: var(--miel, #e0913c);
-  color: var(--azucar, #fffaf2);
-  cursor: pointer;
-}
-.login-card button:hover { background: var(--canela, #b5651d); }
-.login-card button:disabled { opacity: 0.6; cursor: default; }

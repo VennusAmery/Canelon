@@ -1,0 +1,169 @@
+/* ---------- Pestañas ---------- */
+.stock-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stock-tabs button {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--cafe-suave, #5c4632);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.stock-tabs button:hover { background: #f1ede6; }
+.stock-tabs button.active {
+  background: var(--cafe, #3a2a1e);
+  color: var(--azucar, #fffaf2);
+}
+.stock-alert {
+  margin-left: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b3361f;
+}
+
+/* ---------- Formulario de nuevo ingrediente ---------- */
+.stock-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stock-new input,
+.stock-new select {
+  padding: 8px 10px;
+  border: 1px solid #e5d8c3;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  background: #fff;
+}
+.stock-new input[type="text"] { flex: 1; min-width: 180px; }
+.stock-new input[type="number"] { width: 120px; }
+.stock-new button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-size: 13.5px;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  cursor: pointer;
+}
+.stock-new button:hover { background: var(--canela, #b5651d); }
+
+/* ---------- Tabla ---------- */
+.stock-scroll { overflow-x: auto; padding-bottom: 14px; }
+.stock-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.stock-table th {
+  text-align: left;
+  color: var(--cafe-suave, #5c4632);
+  font-size: 12.5px;
+  padding: 8px;
+}
+.stock-table td { padding: 10px 8px; border-top: 1px solid var(--linea); }
+.stock-table input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid #e5d8c3;
+  border-radius: 8px;
+  font-family: inherit;
+}
+.stock-table input.stock-min { width: 70px; background: #faf6ee; }
+.stock-empty { text-align: center; color: var(--cafe-suave, #5c4632); padding: 24px 8px !important; }
+
+.stock-actions { display: flex; gap: 8px; white-space: nowrap; }
+.stock-actions button {
+  border: 1px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.stock-actions button:hover { background: var(--cafe, #3a2a1e); color: var(--azucar, #fffaf2); }
+
+.stock-badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.stock-badge.ok { background: #eaf6ec; color: #2f7a3f; }
+.stock-badge.bajo { background: #fff1d6; color: #a86a00; }
+.stock-badge.agotado { background: #fde5e0; color: #b3361f; }
+.stock-badge.bajo-pedido { background: #f1ede6; color: var(--cafe-suave, #5c4632); }
+.stock-error { color: #b5651d; font-size: 13px; margin: 0 0 12px; }
+
+/* ---------- Banner de alertas (dashboard) ---------- */
+.stock-alerts {
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+}
+.stock-alerts.ok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eaf6ec;
+  color: #2f7a3f;
+  font-size: 14px;
+  font-weight: 600;
+}
+.stock-alerts.warn {
+  background: #fff4e0;
+  border: 1px solid #f0c987;
+  color: var(--cafe, #3a2a1e);
+}
+.stock-alerts-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.stock-alerts-head svg { color: #c77700; flex-shrink: 0; }
+.stock-alerts-head > div { flex: 1; min-width: 200px; }
+.stock-alerts-head strong { display: block; font-size: 15.5px; }
+.stock-alerts-head span { font-size: 13px; color: var(--cafe-suave, #5c4632); }
+.stock-alerts-link {
+  border: 2px solid var(--cafe, #3a2a1e);
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--cafe, #3a2a1e);
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.stock-alerts-link:hover { background: var(--cafe, #3a2a1e); color: var(--azucar, #fffaf2); }
+
+.stock-alerts-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+.stock-alerts-cols h4 {
+  font-family: "Manrope", sans-serif;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a86a00;
+  margin: 0 0 8px;
+}
+.stock-alerts-cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.stock-alerts-cols li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13.5px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+.stock-alerts-cols li b { color: #b3361f; white-space: nowrap; }
+.stock-alerts-cols li small { color: var(--cafe-suave, #5c4632); }
+.stock-alerts-more { font-size: 12.5px; color: var(--cafe-suave, #5c4632); margin-top: 6px; }

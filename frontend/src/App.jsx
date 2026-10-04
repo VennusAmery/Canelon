@@ -10,8 +10,11 @@ import Social from "./components/Social/Social.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import CartDrawer from "./components/CartDrawer/CartDrawer.jsx";
 import Login from "./pages/Login.jsx";
+import AdminLayout from "./pages/AdminLayout.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminStock from "./pages/AdminStock.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
 
 function goTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -39,14 +42,21 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin/login" element={<Login />} />
+
           <Route
             path="/admin"
             element={
               <ProtectedRoute>
-                <AdminDashboard />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="stock" element={<AdminStock />} />
+            <Route index element={<AdminDashboard />} />
+            <Route path="stock" element={<AdminStock />} />
+            <Route path="usuarios" element={<AdminUsers />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </CartProvider>

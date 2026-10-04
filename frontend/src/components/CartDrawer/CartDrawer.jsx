@@ -10,12 +10,12 @@ export default function CartDrawer() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [status, setStatus] = useState("idle");
 
-const handleOrderSuccess = () => {
-  setShowCheckout(false);
-  clearCart();
-  setStatus("done");
-  setTimeout(() => setStatus("idle"), 2500);
-};
+  const handleOrderSuccess = () => {
+    setShowCheckout(false);
+    clearCart();
+    setStatus("done");
+    setTimeout(() => setStatus("idle"), 2500);
+  };
 
   return (
     <>
@@ -36,25 +36,27 @@ const handleOrderSuccess = () => {
             <p className="cart-empty">Todavía no has agregado productos.</p>
           )}
           {items.map((item) => (
-            <div className="cart-line" key={item.id}>
+            <div className="cart-line" key={item.lineId}>
               <div className="thumb" style={{ backgroundImage: `url(${item.image})` }} />
               <div className="cart-line-info">
                 <h4>{item.nombre}</h4>
-                {item.detalle && <div className="precio-unit">{item.detalle}</div>}
+                {item.variantNombre && (
+                  <div className="precio-unit">{item.variantNombre}</div>
+                )}
                 <div className="precio-unit">Q{item.precio} c/u</div>
                 <div className="qty-control">
-                  <button onClick={() => updateQty(item.id, item.qty - 1)} aria-label="Quitar uno">
+                  <button onClick={() => updateQty(item.lineId, item.qty - 1)} aria-label="Quitar uno">
                     <Minus size={14} />
                   </button>
                   <span>{item.qty}</span>
-                  <button onClick={() => updateQty(item.id, item.qty + 1)} aria-label="Agregar uno">
+                  <button onClick={() => updateQty(item.lineId, item.qty + 1)} aria-label="Agregar uno">
                     <Plus size={14} />
                   </button>
                 </div>
               </div>
               <div className="cart-line-actions">
                 <span className="subtotal">Q{item.qty * item.precio}</span>
-                <button onClick={() => removeItem(item.id)} aria-label="Eliminar producto">
+                <button onClick={() => removeItem(item.lineId)} aria-label="Eliminar producto">
                   <Trash2 size={16} />
                 </button>
               </div>

@@ -2,29 +2,37 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
 
-export function CartProvider({ children }) {
-  const [items, setItems] = useState([]); // id, nombre, precio, image
-  const [isOpen, setIsOpen] = useState(false);
-  
-const addItem = (product) => {
-  setItems((prev) => {
-    const existing = prev.find((i) => i.id === product.id);
-    if (existing) {
-      return prev.map((i) =>
-        i.id === product.id ? { ...i, qty: i.qty + 1 } : i
-      );
-    }
-    return [...prev, { ...product, qty: 1 }];
-  });
-};
+// Una línea del carrito = producto + variante elegida (si tiene)
+const lineIdOf = (p) =>
+  p.variantId != null ? `${p.id}:${p.variantId}` : String(p.id);
 
-  const removeItem = (id) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+export function CartProvider({ children }) {
+  // cada item: id (producto), variantId, variantNombre, lineId, nombre, precio, image, qty
+  const [items, setItems] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const addItem = (product) => {
+    const lineId = lineIdOf(product);
+    setItems((prev) => {
+      const existing = prev.find((i) => i.lineId === lineId);
+      if (existing) {
+        return prev.map((i) =>
+          i.lineId === lineId ? { ...i, qty: i.qty + 1 } : i
+        );
+      }
+      return [...prev, { ...product, lineId, qty: 1 }];
+    });
   };
 
-  const updateQty = (id, qty) => {
-    if (qty <= 0) return removeItem(id);
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
+  const removeItem = (lineId) => {
+    setItems((prev) => prev.filter((i) => i.lineId !== lineId));
+  };
+
+  const updateQty = (lineId, qty) => {
+    if (qty <= 0) return removeItem(lineId);
+    setItems((prev) =>
+      prev.map((i) => (i.lineId === lineId ? { ...i, qty } : i))
+    );
   };
 
   const clearCart = () => setItems([]);

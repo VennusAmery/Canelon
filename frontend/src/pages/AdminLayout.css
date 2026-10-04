@@ -1,0 +1,217 @@
+.admin-shell {
+  min-height: 100vh;
+  background: var(--masa, #fdf6e9);
+}
+
+/* ---------- Sidebar ---------- */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  background: var(--cafe, #3a2a1e);
+  color: var(--manteca, #f3dfa8);
+  display: flex;
+  flex-direction: column;
+  z-index: 60;
+}
+
+.admin-sidebar-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 26px 22px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.admin-brand {
+  font-family: "Fraunces", serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--masa, #fbf3e4);
+  margin: 0;
+  line-height: 1.1;
+}
+.admin-brand-sub {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--miel, #e0913c);
+  font-weight: 700;
+  margin: 6px 0 0;
+}
+.admin-sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--masa, #fbf3e4);
+}
+
+/* ---------- Navegación ---------- */
+.admin-nav {
+  flex: 1;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--manteca, #f3dfa8);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.admin-nav-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--masa, #fbf3e4);
+}
+.admin-nav-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-left-color: var(--miel, #e0913c);
+  color: var(--masa, #fbf3e4);
+}
+
+/* ---------- Pie: usuario y cerrar sesión ---------- */
+.admin-sidebar-foot {
+  padding: 16px 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.admin-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.admin-user-info { min-width: 0; }
+.admin-user-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--masa, #fbf3e4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-user-role {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--manteca, #f3dfa8);
+  opacity: 0.7;
+}
+.admin-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: var(--masa, #fbf3e4);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.admin-logout:hover {
+  background: var(--masa, #fbf3e4);
+  color: var(--cafe, #3a2a1e);
+}
+
+/* ---------- Contenido ---------- */
+.admin-main {
+  margin-left: 250px;
+  padding: 40px;
+  min-width: 0;
+}
+/* El dashboard ya no necesita su propio fondo/padding de página completa */
+.admin-main .dash-page {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+}
+.admin-main .dash-loading {
+  min-height: 60vh;
+}
+
+/* ---------- Móvil ---------- */
+.admin-topbar,
+.admin-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--cafe, #3a2a1e);
+    color: var(--masa, #fbf3e4);
+    font-family: "Fraunces", serif;
+    font-weight: 700;
+    z-index: 50;
+  }
+  .admin-topbar button {
+    background: none;
+    border: none;
+    color: var(--masa, #fbf3e4);
+    display: flex;
+  }
+
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 20px 0 40px rgba(58, 42, 30, 0.25);
+  }
+  .admin-sidebar.open { transform: translateX(0); }
+  .admin-sidebar-close { display: block; }
+
+  .admin-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 42, 30, 0.45);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .admin-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 76px 16px 24px;
+  }
+}

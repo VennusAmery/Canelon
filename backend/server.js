@@ -12,6 +12,7 @@ import adminMetricasRoutes from "./routes/adminMetricas.js";
 import contactoRoutes from "./routes/contacto.js";
 import "express-async-errors";
 import fs from "fs";
+import adminStockRoutes from "./routes/adminStock.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/orders", ordersRoutes);
 app.use("/api/admin/pedidos", adminPedidosRoutes);
 app.use("/api/admin/metricas", adminMetricasRoutes);
 app.use("/api/contacto", contactoRoutes);
+app.use("/api/admin/stock", adminStockRoutes);
 
 app.get("/api", (req, res) => {
   res.json({ ok: true, message: "API de Canelon funcionando." });

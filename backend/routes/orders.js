@@ -21,12 +21,15 @@ function minFechaEntregaStr() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-
 router.post("/", async (req, res) => {
   const { cliente, telefono, items, tarjeta, direccionEntrega, fechaEntrega } = req.body;
 
+  // ---------- Validaciones básicas ----------
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: "El pedido no tiene productos." });
+  }
+  if (!items.every((i) => i && i.id && Number.isInteger(i.qty) && i.qty > 0)) {
+    return res.status(400).json({ error: "Cantidad inválida en el pedido." });
   }
   if (!cliente || !telefono) {
     return res.status(400).json({ error: "Nombre y teléfono son requeridos." });
@@ -35,8 +38,8 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "La dirección de entrega es requerida." });
   }
   if (!fechaEntrega || fechaEntrega < minFechaEntregaStr()) {
-  return res.status(400).json({ error: "La fecha de entrega debe ser al menos 3 días después de hoy." });
-}
+    return res.status(400).json({ error: "La fecha de entrega debe ser al menos 3 días después de hoy." });
+  }
   if (!tarjeta?.numero || !tarjeta?.nombre || !tarjeta?.vencimiento || !tarjeta?.cvc) {
     return res.status(400).json({ error: "Datos de tarjeta incompletos." });
   }
@@ -47,22 +50,97 @@ router.post("/", async (req, res) => {
   }
   const last4 = numeroLimpio.slice(-4);
 
-  const total = items.reduce((sum, i) => sum + i.precio * i.qty, 0);
-  const anticipo = Math.round(total * 0.5);
-  const saldo = total - anticipo;
+  // Agrupar por producto + variante (si el carrito repite una línea, se suman cantidades).
+  // El stock es por producto: todas sus variantes comparten inventario.
+  const pedidoLineas = new Map(); // "productId|variantId" -> { id, variantId, qty }
+  const cantidadPorProducto = new Map(); // productId -> qty total
+  for (const i of items) {
+    const variantId = i.variantId ?? null;
+    const key = `${i.id}|${variantId ?? ""}`;
+    const prev = pedidoLineas.get(key);
+    pedidoLineas.set(key, { id: i.id, variantId, qty: (prev?.qty || 0) + i.qty });
+    cantidadPorProducto.set(i.id, (cantidadPorProducto.get(i.id) || 0) + i.qty);
+  }
+  const productIds = [...cantidadPorProducto.keys()];
+
   const orderId = crypto.randomUUID();
   const codigoTransaccion = crypto.randomBytes(4).toString("hex").toUpperCase();
-  const productIds = items.map((i) => i.productId || i.id);
-  
+
   const conn = await pool.getConnection();
+  let committed = false;
+  let datosPedido = null;
+
   try {
     await conn.beginTransaction();
 
-    const productIds = items.map((i) => i.id);
+    // Producto, tipo y stock desde la BD (FOR UPDATE bloquea las filas)
     const [productRows] = await conn.query(
-      `SELECT id, tipo_pedido FROM products WHERE id IN (?)`,
+      `SELECT id, nombre, precio, tipo_pedido, stock
+       FROM products
+       WHERE id IN (?)
+       FOR UPDATE`,
       [productIds]
     );
+    const porId = new Map(productRows.map((p) => [p.id, p]));
+
+    if (productRows.length !== productIds.length) {
+      await conn.rollback();
+      return res.status(400).json({ error: "Hay productos que ya no existen." });
+    }
+
+    // Variantes de esos productos
+    const [variantRows] = await conn.query(
+      `SELECT id, product_id, nombre, precio FROM product_variants WHERE product_id IN (?)`,
+      [productIds]
+    );
+    const variantesPorProducto = new Map();
+    for (const v of variantRows) {
+      if (!variantesPorProducto.has(v.product_id)) variantesPorProducto.set(v.product_id, []);
+      variantesPorProducto.get(v.product_id).push(v);
+    }
+
+    // Validar stock ANTES de insertar nada (por producto)
+    for (const [id, qty] of cantidadPorProducto) {
+      const p = porId.get(id);
+      if (p.tipo_pedido === "stock" && p.stock < qty) {
+        await conn.rollback();
+        return res.status(409).json({
+          error: `No hay suficiente stock de ${p.nombre}. Disponible: ${p.stock}.`,
+        });
+      }
+    }
+
+    // Líneas del pedido con nombre y precio confiables (de la BD)
+    const lineas = [];
+    for (const l of pedidoLineas.values()) {
+      const p = porId.get(l.id);
+      const variantes = variantesPorProducto.get(l.id) || [];
+      let nombre = p.nombre;
+      let precio;
+
+      if (variantes.length > 0) {
+        const v = variantes.find((x) => String(x.id) === String(l.variantId));
+        if (!v) {
+          await conn.rollback();
+          return res.status(400).json({ error: `Elige una opción válida para ${p.nombre}.` });
+        }
+        nombre = `${p.nombre} (${v.nombre})`;
+        precio = Number(v.precio);
+      } else {
+        precio = Number(p.precio);
+      }
+
+      if (!Number.isFinite(precio) || precio <= 0) {
+        await conn.rollback();
+        return res.status(400).json({ error: `El producto ${p.nombre} no tiene precio disponible.` });
+      }
+      lineas.push({ id: l.id, nombre, precio, qty: l.qty });
+    }
+
+    const total = lineas.reduce((sum, l) => sum + l.precio * l.qty, 0);
+    const anticipo = Math.round(total * 0.5);
+    const saldo = total - anticipo;
+
     const esBajoPedido = productRows.some((p) => p.tipo_pedido === "bajo_pedido");
     const tipoPedido = esBajoPedido ? "bajo_pedido" : "stock";
 
@@ -76,15 +154,37 @@ router.post("/", async (req, res) => {
       [orderId, total, cliente, telefono, comprobantePath, anticipo, tipoPedido, direccionEntrega, fechaEntrega]
     );
 
-    for (const item of items) {
+    for (const l of lineas) {
       await conn.query(
         `INSERT INTO order_items (order_id, product_id, nombre, precio, qty) VALUES (?, ?, ?, ?, ?)`,
-        [orderId, item.productId || item.id, item.nombre, item.precio, item.qty]
+        [orderId, l.id, l.nombre, l.precio, l.qty]
       );
+
+      if (porId.get(l.id).tipo_pedido === "stock") {
+        await conn.query(`UPDATE products SET stock = stock - ? WHERE id = ?`, [l.qty, l.id]);
+        await conn.query(
+          `INSERT INTO stock_movements (product_id, tipo, cantidad, order_id) VALUES (?, 'venta', ?, ?)`,
+          [l.id, -l.qty, orderId]
+        );
+      }
     }
 
     await conn.commit();
+    committed = true;
 
+    datosPedido = { total, anticipo, saldo, lineas, comprobanteFilename, comprobantePath };
+  } catch (err) {
+    if (!committed) await conn.rollback();
+    console.error(err);
+    return res.status(500).json({ error: "No se pudo procesar el pago." });
+  } finally {
+    conn.release();
+  }
+
+  // ---------- Comprobante PDF (el pedido ya está guardado) ----------
+  const { total, anticipo, saldo, lineas, comprobanteFilename, comprobantePath } = datosPedido;
+
+  try {
     await generarComprobantePDF({
       filePath: path.join(COMPROBANTES_DIR, comprobanteFilename),
       orderId,
@@ -92,30 +192,27 @@ router.post("/", async (req, res) => {
       telefono,
       direccionEntrega,
       fechaEntrega,
-      items,
+      items: lineas,
       total,
       anticipo,
       saldo,
       codigoTransaccion,
       last4,
     });
-
-    res.status(201).json({
-      id: orderId,
-      total,
-      anticipo,
-      saldo,
-      fechaEntrega,
-      comprobante: comprobantePath,
-      codigoTransaccion,
-    });
   } catch (err) {
-    await conn.rollback();
-    console.error(err);
-    res.status(500).json({ error: "No se pudo procesar el pago." });
-  } finally {
-    conn.release();
+    // El pedido y el stock ya se guardaron: no devolvemos error para que el cliente no repita la compra
+    console.error("Error generando comprobante PDF:", err);
   }
+
+  res.status(201).json({
+    id: orderId,
+    total,
+    anticipo,
+    saldo,
+    fechaEntrega,
+    comprobante: comprobantePath,
+    codigoTransaccion,
+  });
 });
 
 // ---------- Paleta de marca ----------
@@ -144,7 +241,7 @@ function generarComprobantePDF({
 
     const logoPath = path.join(__dirname, "../assets/logo.png");
     if (fs.existsSync(logoPath)) {
-    doc.image(logoPath, M, 20, { width: 50 });
+      doc.image(logoPath, M, 20, { width: 50 });
     }
 
     // Encabezado
@@ -232,7 +329,7 @@ function generarComprobantePDF({
     dottedLine(doc, M, y, W - M);
     y += 20;
 
-    // C9digo de barras decorativo
+    // Código de barras decorativo
     let x = M + 20;
     const barcodeY = y;
     const seed = orderId.replace(/-/g, "");
