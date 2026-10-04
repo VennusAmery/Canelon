@@ -10,6 +10,13 @@ export default function AdminStock() {
           <p className="dash-kicker">Panel administrativo</p>
           <h1>Canelón · Inventario</h1>
         </div>
+
+        <img
+          src="/images/pick.png"
+          alt="Chef Canelón"
+          className="inventory-mascot"
+        />
+
       </header>
 
       <StockPanel />

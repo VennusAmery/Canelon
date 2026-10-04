@@ -37,16 +37,27 @@ body {
 }
 
 /* ---------- Header ---------- */
+
 .dash-header {
+  position: relative;
+  min-height: 120px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 32px;
-  width: 100%;
-  min-width: 0;
+  align-items: flex-start;
+  padding: 0 0 25px;
 }
+
+/* Osito / imagen decorativa */
+.inventory-mascot {
+  position: absolute;
+  top: -5px;
+  right: 55px;
+  width: 190px;
+  height: auto;
+  z-index: 5;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 
 .dash-kicker {
   color: var(--miel, #e0913c);
@@ -164,4 +175,51 @@ body {
   .dash-charts { grid-template-columns: 1fr; }
   .dash-card-wide { grid-column: span 1; }
   .dash-header h1 { font-size: 22px; }
+}
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .inventory-mascot {
+    width: 160px;
+    right: 25px;
+    top: 12px;
+  }
+}
+
+@media (max-width: 650px) {
+  .dash-header {
+    min-height: 125px;
+  }
+
+  .inventory-mascot {
+    width: 120px;
+    right: 10px;
+    top: 5px;
+  }
+
+  .dash-header h1 {
+    max-width: 55%;
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-header {
+    min-height: 110px;
+  }
+
+  .inventory-mascot {
+    width: 95px;
+    right: 5px;
+    top: 56px;
+  }
+
+  .dash-header h1 {
+    max-width: 60%;
+    font-size: 24px;
+  }
+
+  .dash-kicker {
+    font-size: 11px;
+  }
 }
