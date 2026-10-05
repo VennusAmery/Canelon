@@ -54,10 +54,22 @@ export default function AdminLayout() {
 
       <aside className={`admin-sidebar ${open ? "open" : ""}`}>
         <div className="admin-sidebar-head">
-          <div>
-            <p className="admin-brand">Canelón</p>
-            <p className="admin-brand-sub">Panel administrativo</p>
+
+          <div className="admin-brand-wrap">
+
+            <img
+              src="/images/canelon3.png"
+              alt="Canelón"
+              className="admin-brand-image"
+            />
+
+            <div>
+              <p className="admin-brand">Panel</p>
+              <p className="admin-brand-sub">Administrativo</p>
+            </div>
+
           </div>
+
           <button
             className="admin-sidebar-close"
             onClick={() => setOpen(false)}
@@ -65,6 +77,7 @@ export default function AdminLayout() {
           >
             <X size={20} />
           </button>
+
         </div>
 
         <nav className="admin-nav">

@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { API_ORIGIN } from "../api/client.js";
 import "./AdminDashboard.css";
+import AlertasStock from "../components/StockPanel/AlertasStock.jsx";
 
 const COLORS = ["#b5651d", "#e0913c", "#3a2a1e", "#7a6a5c", "#d9c9b7", "#8c5a3a"];
 
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
           <h1>Canelón · Resumen de ventas</h1>
         </div>
       </header>
-
+   <AlertasStock />
       <div className="dash-kpis">
         <div className="dash-kpi">
           <div className="dash-kpi-icon"><Receipt size={20} /></div>

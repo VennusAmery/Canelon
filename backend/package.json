@@ -12,7 +12,9 @@
     "db:init": "node scripts/initDb.js",
     "db:seed": "node scripts/seed.js",
     "db:seed-ventas": "node scripts/seedVentas.js",
-    "db:seed-menu": "node scripts/seedMenu.js"
+    "db:seed-menu": "node scripts/seedMenu.js",
+    "db:seed-stock": "node scripts/seedStock.js"
+    
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

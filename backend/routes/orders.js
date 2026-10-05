@@ -21,6 +21,15 @@ function minFechaEntregaStr() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+// El carrito puede mandar el id de la línea compuesto ("producto|variante|extras")
+// además de productId / variantId. Aquí se obtiene siempre el producto y la variante reales.
+function parseLinea(i) {
+  const partes = String(i.id ?? "").split("|");
+  const productId = String(i.productId ?? partes[0]);
+  const variante = i.variantId ?? i.varianteId ?? i.variante?.id ?? (partes[1] || null);
+  return { productId, variantId: variante ? String(variante) : null };
+}
+
 router.post("/", async (req, res) => {
   const { cliente, telefono, items, tarjeta, direccionEntrega, fechaEntrega } = req.body;
 
@@ -28,7 +37,7 @@ router.post("/", async (req, res) => {
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: "El pedido no tiene productos." });
   }
-  if (!items.every((i) => i && i.id && Number.isInteger(i.qty) && i.qty > 0)) {
+  if (!items.every((i) => i && (i.id || i.productId) && Number.isInteger(i.qty) && i.qty > 0)) {
     return res.status(400).json({ error: "Cantidad inválida en el pedido." });
   }
   if (!cliente || !telefono) {
@@ -50,16 +59,18 @@ router.post("/", async (req, res) => {
   }
   const last4 = numeroLimpio.slice(-4);
 
-  // Agrupar por producto + variante (si el carrito repite una línea, se suman cantidades).
-  // El stock es por producto: todas sus variantes comparten inventario.
+  // Agrupar por producto + variante. Los ids se normalizan a string para que
+  // 5 y "5" cuenten como el mismo producto.
   const pedidoLineas = new Map(); // "productId|variantId" -> { id, variantId, qty }
   const cantidadPorProducto = new Map(); // productId -> qty total
+  const nombresCarrito = new Map(); // productId -> nombre (solo para mensajes de error)
   for (const i of items) {
-    const variantId = i.variantId ?? null;
-    const key = `${i.id}|${variantId ?? ""}`;
+    const { productId: idStr, variantId } = parseLinea(i);
+    const key = `${idStr}|${variantId ?? ""}`;
     const prev = pedidoLineas.get(key);
-    pedidoLineas.set(key, { id: i.id, variantId, qty: (prev?.qty || 0) + i.qty });
-    cantidadPorProducto.set(i.id, (cantidadPorProducto.get(i.id) || 0) + i.qty);
+    pedidoLineas.set(key, { id: idStr, variantId, qty: (prev?.qty || 0) + i.qty });
+    cantidadPorProducto.set(idStr, (cantidadPorProducto.get(idStr) || 0) + i.qty);
+    nombresCarrito.set(idStr, i.nombre);
   }
   const productIds = [...cantidadPorProducto.keys()];
 
@@ -81,11 +92,19 @@ router.post("/", async (req, res) => {
        FOR UPDATE`,
       [productIds]
     );
-    const porId = new Map(productRows.map((p) => [p.id, p]));
+    const porId = new Map(productRows.map((p) => [String(p.id), p]));
 
     if (productRows.length !== productIds.length) {
+      const encontrados = new Set(productRows.map((p) => String(p.id)));
+      const faltantes = productIds.filter((id) => !encontrados.has(id));
+      console.warn("Pedido con productos inexistentes:", faltantes);
       await conn.rollback();
-      return res.status(400).json({ error: "Hay productos que ya no existen." });
+      const detalle = faltantes
+        .map((id) => `${nombresCarrito.get(id) || "?"} (id: ${id})`)
+        .join(", ");
+      return res.status(400).json({
+        error: `No se encontró en la base de datos: ${detalle}. Vacía el carrito y vuelve a agregarlo.`,
+      });
     }
 
     // Variantes de esos productos
@@ -95,8 +114,9 @@ router.post("/", async (req, res) => {
     );
     const variantesPorProducto = new Map();
     for (const v of variantRows) {
-      if (!variantesPorProducto.has(v.product_id)) variantesPorProducto.set(v.product_id, []);
-      variantesPorProducto.get(v.product_id).push(v);
+      const k = String(v.product_id);
+      if (!variantesPorProducto.has(k)) variantesPorProducto.set(k, []);
+      variantesPorProducto.get(k).push(v);
     }
 
     // Validar stock ANTES de insertar nada (por producto)
@@ -134,7 +154,7 @@ router.post("/", async (req, res) => {
         await conn.rollback();
         return res.status(400).json({ error: `El producto ${p.nombre} no tiene precio disponible.` });
       }
-      lineas.push({ id: l.id, nombre, precio, qty: l.qty });
+      lineas.push({ id: p.id, nombre, precio, qty: l.qty });
     }
 
     const total = lineas.reduce((sum, l) => sum + l.precio * l.qty, 0);
@@ -160,7 +180,7 @@ router.post("/", async (req, res) => {
         [orderId, l.id, l.nombre, l.precio, l.qty]
       );
 
-      if (porId.get(l.id).tipo_pedido === "stock") {
+      if (porId.get(String(l.id)).tipo_pedido === "stock") {
         await conn.query(`UPDATE products SET stock = stock - ? WHERE id = ?`, [l.qty, l.id]);
         await conn.query(
           `INSERT INTO stock_movements (product_id, tipo, cantidad, order_id) VALUES (?, 'venta', ?, ?)`,
@@ -200,7 +220,6 @@ router.post("/", async (req, res) => {
       last4,
     });
   } catch (err) {
-    // El pedido y el stock ya se guardaron: no devolvemos error para que el cliente no repita la compra
     console.error("Error generando comprobante PDF:", err);
   }
 
@@ -250,7 +269,7 @@ function generarComprobantePDF({
       .text("Canelón", M, y, { width: W - M * 2, align: "center" });
     y += 34;
     doc.fillColor(COLOR_CANELA).font("Helvetica-Oblique").fontSize(11)
-      .text("Comprobante de pago (simulado)", M, y, { width: W - M * 2, align: "center" });
+      .text("Comprobante de pago", M, y, { width: W - M * 2, align: "center" });
 
     y += 30;
     dottedLine(doc, M, y, W - M);
@@ -345,7 +364,7 @@ function generarComprobantePDF({
 
     y += 20;
     doc.font("Helvetica").fontSize(8).fillColor(COLOR_CAFE_SUAVE).text(
-      "Comprobante simulado, generado con fines de demostración. No representa una transacción bancaria real.",
+      "Comprobante simulado, generado con fines de demostración.",
       M, y, { width: W - M * 2, align: "center" }
     );
 
