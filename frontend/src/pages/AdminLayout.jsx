@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
+  ClipboardList,
   Package,
   UserPlus,
   LogOut,
@@ -23,6 +24,7 @@ function getUsername() {
 
 const LINKS = [
   { to: "/admin", label: "Resumen", icon: LayoutDashboard, end: true },
+  { to: "/admin/pedidos", label: "Pedidos", icon: ClipboardList },
   { to: "/admin/stock", label: "Inventario", icon: Package },
   { to: "/admin/usuarios", label: "Crear usuario", icon: UserPlus },
 ];

@@ -15,6 +15,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminStock from "./pages/AdminStock.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AdminUsers from "./pages/AdminUsers.jsx";
+import AdminPedidos from "./pages/AdminPedidos.jsx";
 
 function goTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -56,6 +57,7 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="stock" element={<AdminStock />} />
             <Route path="usuarios" element={<AdminUsers />} />
+            <Route path="pedidos" element={<AdminPedidos />} />
           </Route>
         </Routes>
       </BrowserRouter>

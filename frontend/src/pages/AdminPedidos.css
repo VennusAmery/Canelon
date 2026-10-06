@@ -1,0 +1,103 @@
+.ap-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.ap-tab {
+  border: 2px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ap-tab.active,
+.ap-tab:hover {
+  background: var(--cafe, #3a2a1e);
+  color: var(--azucar, #fffaf2);
+}
+
+.ap-error { color: #b5651d; font-size: 14px; }
+.ap-empty { color: var(--cafe-suave, #7a6a5c); padding: 30px 0; }
+
+.ap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 18px;
+}
+.ap-card {
+  background: var(--azucar, #fffaf2);
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 24px rgba(58, 42, 30, 0.08);
+}
+.ap-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ap-card-head h3 { font-size: 17px; margin: 0; }
+.ap-sub { font-size: 12.5px; color: var(--cafe-suave, #7a6a5c); margin: 4px 0 0; }
+
+.ap-badges { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.ap-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: #eee;
+  color: var(--cafe, #3a2a1e);
+}
+.ap-badge.estado-recibido { background: #f7e6d0; }
+.ap-badge.estado-en_preparacion { background: #fbe3b5; }
+.ap-badge.estado-listo { background: #dff0e3; color: #2f7a3f; }
+.ap-badge.estado-entregado { background: #d6e8f5; color: #26577c; }
+.ap-badge.estado-cancelado { background: #f3d6d6; color: #8a2d2d; }
+.ap-badge.pago-ok { background: #eaf6ec; color: #2f7a3f; }
+.ap-badge.pago-parcial { background: #f7e6d0; color: #b5651d; }
+
+.ap-items {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  font-size: 14px;
+}
+.ap-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: var(--cafe-suave, #7a6a5c);
+  margin-bottom: 14px;
+}
+.ap-meta strong { color: var(--cafe, #3a2a1e); }
+
+.ap-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ap-actions button {
+  border: 1.5px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ap-actions button:hover { background: rgba(58, 42, 30, 0.08); }
+.ap-actions button.primary {
+  background: var(--miel, #e0913c);
+  border-color: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+}
+.ap-actions button.primary:hover { background: var(--canela, #b5651d); }
+
+.ap-kpi-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--canela, #b5651d);
+}

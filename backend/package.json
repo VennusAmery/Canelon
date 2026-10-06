@@ -14,7 +14,8 @@
     "db:seed-ventas": "node scripts/seedVentas.js",
     "db:seed-menu": "node scripts/seedMenu.js",
     "db:seed-stock": "node scripts/seedStock.js",
-    "db:seed-images": "node scripts/seedImages.js"
+    "db:seed-images": "node scripts/seedImages.js",
+    "db:seed-pedidos": "node scripts/seedPedidos.js"
     
   },
   "dependencies": {
