@@ -1,0 +1,107 @@
+/* ---------- Botones de notificaciones (arriba) ---------- */
+.sa-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.sa-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--linea, rgba(58, 42, 30, 0.12));
+  background: var(--azucar, #fffdf8);
+  color: var(--cafe-suave, #5c4632);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.sa-tab:hover { transform: translateY(-1px); }
+.sa-tab:focus-visible { outline: 3px solid var(--cafe, #3a2a1e); outline-offset: 2px; }
+
+.sa-tab.active.sa-tab-stats       { background: var(--cafe, #3a2a1e); color: var(--azucar, #fffdf8); border-color: transparent; }
+.sa-tab.active.sa-tab-ingredientes { background: #fff3b8; color: #8a6a00; border-color: transparent; }
+.sa-tab.active.sa-tab-productos    { background: #ffe1e1; color: #c0383d; border-color: transparent; }
+
+.sa-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.sa-summary {
+  margin-left: auto;
+  font-size: 13px;
+  color: #c0383d;
+  font-weight: 600;
+}
+.sa-summary.ok { color: #4f9a2a; }
+
+/* ---------- Tarjeta de stock bajo ---------- */
+.sa-card {
+  background: var(--azucar, #fffdf8);
+  border: 1px solid var(--miel, #e0913c);
+  border-radius: 18px;
+  padding: 24px 28px;
+}
+.sa-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.sa-card-title { display: flex; align-items: center; gap: 14px; color: var(--cafe, #3a2a1e); }
+.sa-card-title h3 { font-family: inherit; font-size: 18px; font-weight: 700; margin: 0; }
+.sa-card-title p { margin: 2px 0 0; font-size: 14px; color: var(--cafe-suave, #5c4632); }
+
+.sa-go {
+  border: 2px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.sa-go:hover { background: var(--cafe, #3a2a1e); color: var(--azucar, #fffdf8); }
+
+.sa-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 8px;
+}
+.sa-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--masa, #fbf3e4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
+.sa-row small { color: var(--cafe-suave, #5c4632); font-size: 12px; }
+.sa-row strong { color: #c0383d; }
+
+.sa-empty { color: #4f9a2a; font-weight: 600; margin: 0; }

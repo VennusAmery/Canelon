@@ -16,7 +16,6 @@ export default function AdminStock() {
           alt="Chef Canelón"
           className="inventory-mascot"
         />
-
       </header>
 
       <StockPanel />

@@ -223,3 +223,22 @@ body {
     font-size: 11px;
   }
 }
+
+.dash-tabs {
+  display: flex;
+  gap: 28px;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 24px;
+}
+.dash-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 2px;
+  font-weight: 600;
+  color: var(--cafe-suave);
+  border-bottom: 2px solid transparent;
+}
+.dash-tabs button.active {
+  color: var(--canela);
+  border-bottom-color: var(--canela);
+}
