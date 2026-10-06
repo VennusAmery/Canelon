@@ -9,11 +9,17 @@ const ADD_FEEDBACK_MS = 1200;
 const mediaUrl = (path) => (path ? `${API_ORIGIN}${path}` : null);
 const videoUrl = (path) => (path ? `${API_ORIGIN}${path}` : null);
 
+
+const formatPrice = (n) => {
+  const num = Number(n);
+  return `Q${Number.isInteger(num) ? num : num.toFixed(2)}`;
+};
+
 function getDisplayPrice(product) {
-  if (product.precio != null) return `Q${product.precio}`;
+  if (product.precio != null) return formatPrice(product.precio);
   if (product.variantes && product.variantes.length > 0) {
     const min = Math.min(...product.variantes.map((v) => v.precio));
-    return `Q${min}`;
+    return formatPrice(min);
   }
   return "Precio a consultar";
 }
@@ -111,6 +117,8 @@ const [productoOpciones, setProductoOpciones] = useState(null);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
+
+  
 
   const updateActiveIndex = useCallback(() => {
     const track = trackRef.current;

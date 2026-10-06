@@ -18,7 +18,6 @@ export default function ProductOptionsModal({ product, onClose, onConfirm }) {
 
   const [varianteId, setVarianteId] = useState(variantes[0]?.id ?? null);
 
-  // grupos: { masa: [..], relleno: [..], extra: [..] }
   const grupos = useMemo(() => {
     const g = {};
     opciones.forEach((o) => {
