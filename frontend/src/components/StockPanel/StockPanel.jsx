@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Search, X } from "lucide-react";
 import { API_ORIGIN } from "../../api/client.js";
 import "./StockPanel.css";
 
@@ -18,6 +19,13 @@ function api(path, options = {}) {
 // Avisa al layout para que actualice el contador de alertas del sidebar
 const notificar = () => window.dispatchEvent(new Event("stock-updated"));
 
+// Ignora mayúsculas y tildes: "limon" encuentra "Loaf de Limón"
+const normalizar = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
 const LABELS = {
   "bajo-pedido": "Bajo pedido",
   agotado: "Agotado",
@@ -30,6 +38,8 @@ export default function StockPanel() {
   const [rows, setRows] = useState([]);
   const [inputs, setInputs] = useState({});
   const [error, setError] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [filtro, setFiltro] = useState("todos"); // todos | reponer | agotado
   const [nuevo, setNuevo] = useState({
     nombre: "",
     unidad: "kg",
@@ -51,12 +61,15 @@ export default function StockPanel() {
       })
       .catch(() => setError("No se pudo cargar el inventario."));
 
-  useEffect(() => {
-    setRows([]);
-    setInputs({});
-    load(tab);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+    useEffect(() => {
+      setRows([]);
+      setInputs({});
+      setBusqueda("");
+      setFiltro("todos");
+      load(tab);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tab]);
+
 
   const estado = (r) => {
     if (esProductos && r.tipo_pedido !== "stock") return "bajo-pedido";
@@ -65,7 +78,22 @@ export default function StockPanel() {
     return "ok";
   };
 
-  const alertas = rows.filter((r) => ["agotado", "bajo"].includes(estado(r))).length;
+
+// Los contadores usan todos los registros, no solo los filtrados
+const alertas = rows.filter((r) => ["agotado", "bajo"].includes(estado(r))).length;
+const agotados = rows.filter((r) => estado(r) === "agotado").length;
+
+const q = normalizar(busqueda.trim());
+const visibles = rows.filter((r) => {
+  const e = estado(r);
+  if (filtro === "reponer" && !["agotado", "bajo"].includes(e)) return false;
+  if (filtro === "agotado" && e !== "agotado") return false;
+  if (q && !normalizar(r.nombre).includes(q)) return false;
+  return true;
+});
+
+  // Filtro por estado
+  const filtrados = filtro === "todos" ? visibles : visibles.filter((r) => estado(r) === filtro);
 
   const mover = async (id, tipo) => {
     const valor = inputs[id];
@@ -161,13 +189,54 @@ export default function StockPanel() {
           />
           <input
             type="number" min="0" step="any"
-            placeholder="Mínimo"
+            placeholder="Stock mínimo"
             value={nuevo.stock_minimo}
             onChange={(e) => setNuevo({ ...nuevo, stock_minimo: e.target.value })}
           />
           <button type="submit">+ Agregar</button>
         </form>
       )}
+
+<div className="stk-toolbar">
+  <div className="stk-search">
+    <Search size={16} />
+    <input
+      type="text"
+      value={busqueda}
+      onChange={(e) => setBusqueda(e.target.value)}
+      placeholder={esProductos ? "Buscar producto..." : "Buscar ingrediente..."}
+    />
+    {busqueda && (
+      <button type="button" onClick={() => setBusqueda("")} aria-label="Limpiar búsqueda">
+        <X size={14} />
+      </button>
+    )}
+  </div>
+
+      <div className="stk-filters">
+        <button
+          type="button"
+          className={filtro === "todos" ? "active" : ""}
+          onClick={() => setFiltro("todos")}
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          className={`warn ${filtro === "reponer" ? "active" : ""}`}
+          onClick={() => setFiltro("reponer")}
+        >
+          Por reponer ({alertas})
+        </button>
+        <button
+          type="button"
+          className={`danger ${filtro === "agotado" ? "active" : ""}`}
+          onClick={() => setFiltro("agotado")}
+        >
+          Agotados ({agotados})
+        </button>
+      </div>
+    </div>
 
       <div className="stock-scroll">
         <table className="stock-table">
@@ -183,7 +252,7 @@ export default function StockPanel() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => {
+            {visibles.map((r) => {
               const editable = !esProductos || r.tipo_pedido === "stock";
               return (
                 <tr key={r.id}>
@@ -214,6 +283,7 @@ export default function StockPanel() {
                     {editable && (
                       <input
                         type="number" min="0" step={esProductos ? 1 : "any"}
+                        placeholder="Ej. 10"
                         value={inputs[r.id] ?? ""}
                         onChange={(e) =>
                           setInputs((p) => ({ ...p, [r.id]: e.target.value }))
@@ -224,26 +294,47 @@ export default function StockPanel() {
                   <td className="stock-actions">
                     {editable && (
                       <>
-                        <button onClick={() => mover(r.id, "entrada")}>+ Entrada</button>
+                        <button
+                          title="Suma esta cantidad al stock actual"
+                          onClick={() => mover(r.id, "entrada")}
+                        >
+                          + Agregar
+                        </button>
                         {!esProductos && (
-                          <button onClick={() => mover(r.id, "salida")}>− Salida</button>
+                          <button
+                            title="Resta esta cantidad del stock actual"
+                            onClick={() => mover(r.id, "salida")}
+                          >
+                            − Quitar
+                          </button>
                         )}
-                        <button onClick={() => mover(r.id, "ajuste")}>Fijar total</button>
+                        <button
+                          title="Reemplaza el stock actual por este número"
+                          onClick={() => mover(r.id, "ajuste")}
+                        >
+                          Corregir stock
+                        </button>
                       </>
                     )}
                   </td>
                 </tr>
               );
             })}
-            {rows.length === 0 && !error && (
-              <tr>
-                <td colSpan={7} className="stock-empty">
-                  {esProductos
-                    ? "No hay productos."
-                    : "Todavía no hay ingredientes. Corre el seed o agrega uno arriba."}
-                </td>
-              </tr>
-            )}
+              {visibles.length === 0 && !error && (
+                <tr>
+                  <td colSpan={7} className="stock-empty">
+                    {q
+                      ? `No se encontró nada para "${busqueda}".`
+                      : filtro === "reponer"
+                        ? "Todo en orden: no hay nada por reponer."
+                        : filtro === "agotado"
+                          ? "No hay nada agotado."
+                          : esProductos
+                            ? "No hay productos."
+                            : "Todavía no hay ingredientes. Corre el seed o agrega uno arriba."}
+                  </td>
+                </tr>
+              )}
           </tbody>
         </table>
       </div>

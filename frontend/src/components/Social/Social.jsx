@@ -3,11 +3,24 @@ import {
   Instagram,
   Mail,
   MessageCircle,
-  Clock,
-  MapPin,
+  Facebook,
 } from "lucide-react";
 import ContactForm from "./ContactForm.jsx";
 import "./Social.css";
+
+function TikTokIcon({ size = 18 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.2V2h-3.4v13.3a2.9 2.9 0 1 1-2-2.8V9a6.3 6.3 0 1 0 5.4 6.3V8.9a8.1 8.1 0 0 0 4.7 1.5V7a4.8 4.8 0 0 1-.9-.3z" />
+    </svg>
+  );
+}
 
 export default function Social() {
   return (
@@ -48,6 +61,30 @@ export default function Social() {
                 <Instagram size={18} />
               </a>
 
+              {/* Facebook */}
+              <a
+                className="social-icon"
+                href="https://www.facebook.com/share/18RaMWJUPJ/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noreferrer"
+                title="Facebook de Canelón"
+                aria-label="Facebook"
+              >
+                <Facebook size={18} />
+              </a>
+
+              {/* TikTok */}
+              <a
+                className="social-icon"
+                href="https://www.tiktok.com/@canelon.gt"
+                target="_blank"
+                rel="noreferrer"
+                title="@canelon.gt"
+                aria-label="TikTok"
+              >
+                <TikTokIcon size={18} />
+              </a>
+
               {/* Correo */}
               <a
                 className="social-icon"
@@ -58,7 +95,7 @@ export default function Social() {
                 <Mail size={18} />
               </a>
 
-              {/* WhatsApp */}
+              {/* WhatsApp 
               <div
                 className="social-icon"
                 title="Escríbenos para pedidos especiales"
@@ -66,25 +103,8 @@ export default function Social() {
               >
                 <MessageCircle size={18} />
               </div>
-
-              {/* Horario */}
-              <div
-                className="social-icon"
-                title="Lunes a sábado, 8:00 AM – 4:00 PM"
-                aria-label="Horario"
-              >
-                <Clock size={18} />
-              </div>
-
-              {/* Ubicación */}
-              <div
-                className="social-icon"
-                title="Ciudad de Guatemala"
-                aria-label="Ubicación"
-              >
-                <MapPin size={18} />
-              </div>
-
+              */}
+              
             </div>
           </div>
         </div>

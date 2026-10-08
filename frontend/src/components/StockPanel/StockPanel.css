@@ -167,3 +167,105 @@
 .stock-alerts-cols li b { color: #b3361f; white-space: nowrap; }
 .stock-alerts-cols li small { color: var(--cafe-suave, #5c4632); }
 .stock-alerts-more { font-size: 12.5px; color: var(--cafe-suave, #5c4632); margin-top: 6px; }
+
+.stk-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 800px;
+  max-width: 360px;
+  margin: 0 0 16px;
+  color: var(--cafe-suave, #7a6a5c);
+}
+.stk-search > svg {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+}
+.stk-search input {
+  width: 100%;
+  padding: 10px 36px 10px 38px;
+  border: 1px solid #e5d8c3;
+  border-radius: 12px;  
+  background: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--cafe, #3a2a1e);
+}
+.stk-search input:focus {
+  outline: none;
+  border-color: var(--miel, #e0913c);
+}
+.stk-search button {
+  position: absolute;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cafe-suave, #7a6a5c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.stk-search button:hover { background: #f1ede6; }
+
+.stk-empty {
+  text-align: center;
+  padding: 28px 0;
+  color: var(--cafe-suave, #7a6a5c);
+}
+
+.stk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+.stk-toolbar .stk-search {
+  margin: 0;
+  flex: 1 1 260px;
+}
+
+.stk-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.stk-filters button {
+  border: 1.5px solid var(--cafe, #3a2a1e);
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.stk-filters button:hover { background: rgba(58, 42, 30, 0.08); }
+.stk-filters button.active {
+  background: var(--cafe, #3a2a1e);
+  color: var(--azucar, #fffaf2);
+}
+.stk-filters button.warn {
+  border-color: #b5651d;
+  color: #b5651d;
+}
+.stk-filters button.warn.active {
+  background: #b5651d;
+  color: var(--azucar, #fffaf2);
+}
+.stk-filters button.danger {
+  border-color: #a63a3a;
+  color: #a63a3a;
+}
+.stk-filters button.danger.active {
+  background: #a63a3a;
+  color: var(--azucar, #fffaf2);
+}
