@@ -160,3 +160,21 @@
   resize: vertical;
   box-sizing: border-box;
 }
+
+.checkout-modal .checkout-alt {
+  width: 100%;
+  margin-top: 10px;
+  border: 2px solid var(--cafe, #3a2a1e);
+  border-radius: 999px;
+  padding: 10px;
+  font-weight: 700;
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.checkout-modal .checkout-alt:hover {
+  background: var(--cafe, #3a2a1e);
+  color: var(--azucar, #fffaf2);
+}
+.checkout-modal .checkout-alt:disabled { opacity: 0.6; cursor: default; }

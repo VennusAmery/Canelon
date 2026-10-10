@@ -101,3 +101,12 @@
   font-weight: 700;
   color: var(--canela, #b5651d);
 }
+
+.ap-badge-metodo {
+  background: #e8dfd2;
+  color: #3a2a1e;
+}
+
+.ap-tabs-metodo {
+  margin-top: 10px;
+}

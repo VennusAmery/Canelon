@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ClipboardList, ChefHat, Truck, CheckCircle2, BadgeCheck, Wallet} from "lucide-react";
+import { ClipboardList, Truck, CheckCircle2, BadgeCheck, Wallet } from "lucide-react";
 import { API_ORIGIN } from "../api/client.js";
 import "./AdminDashboard.css";
 import "./AdminPedidos.css";
@@ -13,6 +13,17 @@ const TABS = [
   { id: "pago_completo", label: "Pago completo", query: `pago_completo=1&${ACTIVOS}` },
   { id: "falta_pago", label: "Falta pago", query: `pago_completo=0&${ACTIVOS}` },
   { id: "todos", label: "Todos", query: "" },
+];
+
+const METODOS = {
+  tarjeta: "Tarjeta",
+  contra_entrega: "Contra entrega",
+};
+
+const FILTROS_METODO = [
+  { id: "", label: "Todos los métodos" },
+  { id: "contra_entrega", label: "Contra entrega" },
+  { id: "tarjeta", label: "Tarjeta" },
 ];
 
 const ESTADO_LABEL = {
@@ -40,6 +51,7 @@ function api(path, options = {}) {
 
 export default function AdminPedidos() {
   const [tab, setTab] = useState("por_realizar");
+  const [metodo, setMetodo] = useState("");
   const [resumen, setResumen] = useState(null);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,9 +62,10 @@ export default function AdminPedidos() {
     setError("");
     try {
       const q = TABS.find((t) => t.id === tab).query;
+      const query = [q, metodo && `metodo_pago=${metodo}`].filter(Boolean).join("&");
       const [r, lista] = await Promise.all([
         api("/api/admin/pedidos/resumen"),
-        api(`/api/admin/pedidos${q ? `?${q}` : ""}`),
+        api(`/api/admin/pedidos${query ? `?${query}` : ""}`),
       ]);
       setResumen(r);
       setPedidos(lista);
@@ -61,7 +74,7 @@ export default function AdminPedidos() {
     } finally {
       setLoading(false);
     }
-  }, [tab]);
+  }, [tab, metodo]);
 
   useEffect(() => {
     setLoading(true);
@@ -105,17 +118,14 @@ export default function AdminPedidos() {
 
       {resumen && (
         <div className="dash-kpis">
-
-
-
-            <div className="dash-kpi">
+          <div className="dash-kpi">
             <div className="dash-kpi-icon"><Wallet size={20} /></div>
             <div>
-                <p className="dash-kpi-label">Falta pago completo</p>
-                <p className="dash-kpi-value">{resumen.saldo_pendiente}</p>
-                <p className="ap-kpi-sub">Q{resumen.saldo_por_cobrar} por cobrar</p>
+              <p className="dash-kpi-label">Falta pago completo</p>
+              <p className="dash-kpi-value">{resumen.saldo_pendiente}</p>
+              <p className="ap-kpi-sub">Q{resumen.saldo_por_cobrar} por cobrar</p>
             </div>
-            </div>
+          </div>
           <div className="dash-kpi">
             <div className="dash-kpi-icon"><CheckCircle2 size={20} /></div>
             <div>
@@ -161,6 +171,18 @@ export default function AdminPedidos() {
         ))}
       </div>
 
+      <div className="ap-tabs ap-tabs-metodo">
+        {FILTROS_METODO.map((f) => (
+          <button
+            key={f.id || "todos"}
+            className={`ap-tab ${metodo === f.id ? "active" : ""}`}
+            onClick={() => setMetodo(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {error && <p className="ap-error">{error}</p>}
 
       {loading ? (
@@ -185,6 +207,9 @@ export default function AdminPedidos() {
                     </span>
                     <span className={`ap-badge ${p.pago_completo ? "pago-ok" : "pago-parcial"}`}>
                       {p.pago_completo ? "Pago completo" : "Saldo pendiente"}
+                    </span>
+                    <span className="ap-badge ap-badge-metodo">
+                      {METODOS[p.metodo_pago] ?? p.metodo_pago}
                     </span>
                   </div>
                 </div>

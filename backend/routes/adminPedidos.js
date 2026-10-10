@@ -26,20 +26,23 @@ router.get("/resumen", requireAuth, async (req, res) => {
 });
 
 router.get("/", requireAuth, async (req, res) => {
-  const { estado_pago, estado, tipo_pedido, pago_completo } = req.query;
+  const { estado_pago, estado, tipo_pedido, metodo_pago, pago_completo } = req.query;
   const conditions = [];
   const params = [];
 
   if (estado_pago) { conditions.push("estado_pago = ?"); params.push(estado_pago); }
-  if (estado) { conditions.push("estado IN (?)"); params.push(estado.split(",")); }
+  if (estado) {
+    const lista = String(estado).split(",").map((s) => s.trim()).filter(Boolean);
+    if (lista.length) { conditions.push("estado IN (?)"); params.push(lista); }
+  }
   if (tipo_pedido) { conditions.push("tipo_pedido = ?"); params.push(tipo_pedido); }
+  if (metodo_pago) { conditions.push("metodo_pago = ?"); params.push(metodo_pago); }
   if (pago_completo === "1" || pago_completo === "0") {
     conditions.push("pago_completo = ?");
     params.push(Number(pago_completo));
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
-
   const [orders] = await pool.query(
     `SELECT * FROM orders ${where} ORDER BY fecha_entrega ASC, creado_en DESC`,
     params

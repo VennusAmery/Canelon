@@ -30,15 +30,38 @@ function parseLinea(i) {
   return { productId, variantId: variante ? String(variante) : null };
 }
 
+function numeroFactura(orderId) {
+  return `CAN-${orderId.slice(0, 8).toUpperCase()}`;
+}
+
+function slug(texto) {
+  return String(texto)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 30) || "cliente";
+}
+
 router.post("/", async (req, res) => {
-  const { cliente, telefono, items, tarjeta, direccionEntrega, fechaEntrega } = req.body;
+  const {
+    cliente,
+    telefono,
+    items,
+    tarjeta,
+    direccionEntrega,
+    fechaEntrega,
+    metodoPago = "tarjeta",
+  } = req.body;
 
   // ---------- Validaciones básicas ----------
+  if (!["tarjeta", "contra_entrega"].includes(metodoPago)) {
+    return res.status(400).json({ error: "Método de pago inválido." });
+  }
+  const esTarjeta = metodoPago === "tarjeta";
+
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: "El pedido no tiene productos." });
-  }
-  if (!items.every((i) => i && (i.id || i.productId) && Number.isInteger(i.qty) && i.qty > 0)) {
-    return res.status(400).json({ error: "Cantidad inválida en el pedido." });
   }
   if (!cliente || !telefono) {
     return res.status(400).json({ error: "Nombre y teléfono son requeridos." });
@@ -49,15 +72,20 @@ router.post("/", async (req, res) => {
   if (!fechaEntrega || fechaEntrega < minFechaEntregaStr()) {
     return res.status(400).json({ error: "La fecha de entrega debe ser al menos 3 días después de hoy." });
   }
-  if (!tarjeta?.numero || !tarjeta?.nombre || !tarjeta?.vencimiento || !tarjeta?.cvc) {
-    return res.status(400).json({ error: "Datos de tarjeta incompletos." });
+
+  let last4 = null;
+  if (esTarjeta) {
+    if (!tarjeta?.numero || !tarjeta?.nombre || !tarjeta?.vencimiento || !tarjeta?.cvc) {
+      return res.status(400).json({ error: "Datos de tarjeta incompletos." });
+    }
+    const numeroLimpio = tarjeta.numero.replace(/\s+/g, "");
+    if (numeroLimpio.length < 12) {
+      return res.status(400).json({ error: "Número de tarjeta inválido." });
+    }
+    last4 = numeroLimpio.slice(-4);
   }
 
-  const numeroLimpio = tarjeta.numero.replace(/\s+/g, "");
-  if (numeroLimpio.length < 12) {
-    return res.status(400).json({ error: "Número de tarjeta inválido." });
-  }
-  const last4 = numeroLimpio.slice(-4);
+  const estadoPago = esTarjeta ? "aprobado" : "pendiente";
 
   // Agrupar por producto + variante. Los ids se normalizan a string para que
   // 5 y "5" cuenten como el mismo producto.
@@ -84,12 +112,11 @@ router.post("/", async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // Producto, tipo y stock desde la BD (FOR UPDATE bloquea las filas)
     const [productRows] = await conn.query(
-      `SELECT id, nombre, precio, tipo_pedido, stock
-       FROM products
-       WHERE id IN (?)
-       FOR UPDATE`,
+      `SELECT id, nombre, descripcion, precio, tipo_pedido, stock
+      FROM products
+      WHERE id IN (?)
+      FOR UPDATE`,
       [productIds]
     );
     const porId = new Map(productRows.map((p) => [String(p.id), p]));
@@ -107,9 +134,9 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Variantes de esos productos
+
     const [variantRows] = await conn.query(
-      `SELECT id, product_id, nombre, precio FROM product_variants WHERE product_id IN (?)`,
+      `SELECT id, product_id, nombre, detalle, precio FROM product_variants WHERE product_id IN (?)`,
       [productIds]
     );
     const variantesPorProducto = new Map();
@@ -130,49 +157,51 @@ router.post("/", async (req, res) => {
       }
     }
 
-    // Líneas del pedido con nombre y precio confiables (de la BD)
-    const lineas = [];
-    for (const l of pedidoLineas.values()) {
-      const p = porId.get(l.id);
-      const variantes = variantesPorProducto.get(l.id) || [];
-      let nombre = p.nombre;
-      let precio;
+const lineas = [];
+for (const l of pedidoLineas.values()) {
+  const p = porId.get(l.id);
+  const variantes = variantesPorProducto.get(l.id) || [];
+  let nombre = p.nombre;
+  let precio;
+  let detalle = p.descripcion || "";
 
-      if (variantes.length > 0) {
-        const v = variantes.find((x) => String(x.id) === String(l.variantId));
-        if (!v) {
-          await conn.rollback();
-          return res.status(400).json({ error: `Elige una opción válida para ${p.nombre}.` });
-        }
-        nombre = `${p.nombre} (${v.nombre})`;
-        precio = Number(v.precio);
-      } else {
-        precio = Number(p.precio);
-      }
-
-      if (!Number.isFinite(precio) || precio <= 0) {
-        await conn.rollback();
-        return res.status(400).json({ error: `El producto ${p.nombre} no tiene precio disponible.` });
-      }
-      lineas.push({ id: p.id, nombre, precio, qty: l.qty });
+  if (variantes.length > 0) {
+    const v = variantes.find((x) => String(x.id) === String(l.variantId));
+    if (!v) {
+      await conn.rollback();
+      return res.status(400).json({ error: `Elige una opción válida para ${p.nombre}.` });
     }
+    nombre = `${p.nombre} (${v.nombre})`;
+    precio = Number(v.precio);
+    detalle = v.detalle || p.descripcion || "";
+  } else {
+    precio = Number(p.precio);
+  }
 
+  if (!Number.isFinite(precio) || precio <= 0) {
+    await conn.rollback();
+    return res.status(400).json({ error: `El producto ${p.nombre} no tiene precio disponible.` });
+  }
+  lineas.push({ id: p.id, nombre, detalle, precio, qty: l.qty });
+}
+
+    // Totales con precios de la BD. Contra entrega: sin anticipo, todo queda como saldo.
     const total = lineas.reduce((sum, l) => sum + l.precio * l.qty, 0);
-    const anticipo = Math.round(total * 0.5);
+    const anticipo = esTarjeta ? Math.round(total * 0.5) : 0;
     const saldo = total - anticipo;
 
     const esBajoPedido = productRows.some((p) => p.tipo_pedido === "bajo_pedido");
     const tipoPedido = esBajoPedido ? "bajo_pedido" : "stock";
 
-    const comprobanteFilename = `${orderId}.pdf`;
-    const comprobantePath = `/comprobantes/${comprobanteFilename}`;
+const comprobanteFilename = `Factura-${numeroFactura(orderId)}-${slug(cliente)}.pdf`;
+const comprobantePath = `/comprobantes/${comprobanteFilename}`;
 
-    await conn.query(
-      `INSERT INTO orders
-        (id, total, estado, cliente, telefono_cliente, estado_pago, comprobante_pago, monto_anticipo, tipo_pedido, direccion_entrega, fecha_entrega)
-       VALUES (?, ?, 'recibido', ?, ?, 'aprobado', ?, ?, ?, ?, ?)`,
-      [orderId, total, cliente, telefono, comprobantePath, anticipo, tipoPedido, direccionEntrega, fechaEntrega]
-    );
+  await conn.query(
+    `INSERT INTO orders
+      (id, total, estado, cliente, telefono_cliente, estado_pago, metodo_pago, comprobante_pago, monto_anticipo, tipo_pedido, direccion_entrega, fecha_entrega)
+    VALUES (?, ?, 'recibido', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [orderId, total, cliente, telefono, estadoPago, metodoPago, comprobantePath, anticipo, tipoPedido, direccionEntrega, fechaEntrega]
+  );
 
     for (const l of lineas) {
       await conn.query(
@@ -196,7 +225,7 @@ router.post("/", async (req, res) => {
   } catch (err) {
     if (!committed) await conn.rollback();
     console.error(err);
-    return res.status(500).json({ error: "No se pudo procesar el pago." });
+    return res.status(500).json({ error: "No se pudo procesar el pedido." });
   } finally {
     conn.release();
   }
@@ -207,17 +236,8 @@ router.post("/", async (req, res) => {
   try {
     await generarComprobantePDF({
       filePath: path.join(COMPROBANTES_DIR, comprobanteFilename),
-      orderId,
-      cliente,
-      telefono,
-      direccionEntrega,
-      fechaEntrega,
-      items: lineas,
-      total,
-      anticipo,
-      saldo,
-      codigoTransaccion,
-      last4,
+      orderId, cliente, telefono, direccionEntrega, fechaEntrega,
+      items: lineas, total, anticipo, saldo, codigoTransaccion, last4, metodoPago,
     });
   } catch (err) {
     console.error("Error generando comprobante PDF:", err);
@@ -231,154 +251,259 @@ router.post("/", async (req, res) => {
     fechaEntrega,
     comprobante: comprobantePath,
     codigoTransaccion,
+    metodoPago,
   });
 });
 
-// ---------- Paleta de marca ----------
-const COLOR_CAFE = "#3a2a1e";
-const COLOR_CAFE_SUAVE = "#7a6a5c";
-const COLOR_CANELA = "#b5651d";
-const COLOR_MIEL = "#e0913c";
-const COLOR_MASA = "#fdf6e9";
-const COLOR_LINEA = "#d9c9b7";
+// ---------- Paleta de marca (misma de index.css) ----------
+const C = {
+  fondo: "#b9793f",    // canela
+  hoja: "#fbf3e4",     // masa
+  pildora: "#f3dfa8",  // manteca
+  linea: "#e3cfa0",    // manteca más oscura
+  acento: "#b9793f",   // canela
+  texto: "#3a2a1e",    // café
+  suave: "#5c4632",    // café suave
+};
+
+// Reduce el tamaño de fuente hasta que el texto quepa en maxW
+function ajustarFuente(doc, font, text, maxW, size) {
+  doc.font(font);
+  while (size > 8) {
+    doc.fontSize(size);
+    if (doc.widthOfString(text) <= maxW) break;
+    size -= 1;
+  }
+  return size;
+}
 
 function generarComprobantePDF({
   filePath, orderId, cliente, telefono, direccionEntrega, fechaEntrega,
-  items, total, anticipo, saldo, codigoTransaccion, last4,
+  items, total, anticipo, saldo, codigoTransaccion, last4, metodoPago,
 }) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A5", margin: 0 });
+    const numero = numeroFactura(orderId);
+
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 0,
+      info: {
+        Title: `Factura ${numero} - ${cliente}`,
+        Author: "Canelón",
+        Subject: "Comprobante de pedido",
+      },
+    });
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    const W = doc.page.width;
-    const M = 36; // margen interno
-    let y = 0;
-
-    // Fondo crema en toda la página
-    doc.rect(0, 0, W, doc.page.height).fill(COLOR_MASA);
-
-    const logoPath = path.join(__dirname, "../assets/logo.png");
-    if (fs.existsSync(logoPath)) {
-      doc.image(logoPath, M, 20, { width: 50 });
+    // Fuente condensada opcional (Anton). Si no existe, usa Helvetica-Bold.
+    const fontPath = path.join(__dirname, "../assets/fonts/Anton-Regular.ttf");
+    let FT = "Helvetica-Bold";
+    if (fs.existsSync(fontPath)) {
+      doc.registerFont("Titulo", fontPath);
+      FT = "Titulo";
     }
 
-    // Encabezado
-    y = 40;
-    doc.fillColor(COLOR_CAFE).font("Helvetica-Bold").fontSize(28)
-      .text("Canelón", M, y, { width: W - M * 2, align: "center" });
-    y += 34;
-    doc.fillColor(COLOR_CANELA).font("Helvetica-Oblique").fontSize(11)
-      .text("Comprobante de pago", M, y, { width: W - M * 2, align: "center" });
+    // ---------- Medidas ----------
+    const W = doc.page.width;
+    const H = doc.page.height;
+    const CM = 28;
+    const CX = CM;
+    const CW = W - CM * 2;
+    const CB = H - CM;
+    const P = 30;
+    const LX = CX + P;
+    const LW = 150;
+    const DIVX = CX + 215;
+    const RX = DIVX + 18;
+    const RR = CX + CW - P;
+    const RW = RR - RX;
+    const TOP = 200;
 
-    y += 30;
-    dottedLine(doc, M, y, W - M);
-    y += 14;
+    const pintarFondo = () => {
+      doc.rect(0, 0, W, H).fill(C.fondo);
+      doc.rect(CX, CM, CW, CB - CM).fill(C.hoja);
+    };
+    const divisor = (yIni) => {
+      doc.moveTo(DIVX, yIni).lineTo(DIVX, CB - P).lineWidth(1).strokeColor(C.linea).stroke();
+    };
 
-    // Encabezado de columnas
-    doc.fillColor(COLOR_CAFE_SUAVE).font("Helvetica-Bold").fontSize(9);
-    doc.text("PRODUCTO", M, y);
-    doc.text("CANT.", W - M - 140, y, { width: 60, align: "center" });
-    doc.text("PRECIO", W - M - 70, y, { width: 70, align: "right" });
-    y += 16;
-    dottedLine(doc, M, y, W - M);
-    y += 14;
+    pintarFondo();
 
-    // Filas de productos
-    items.forEach((item, i) => {
-      doc.fillColor(COLOR_CAFE).font("Helvetica-Bold").fontSize(12);
-      doc.text(`${String(i + 1).padStart(2, "0")}  ${item.nombre}`, M, y, { width: W - M * 2 - 130 });
+    // ---------- Logo ----------
+    const logoPath = path.join(__dirname, "../assets/logo.png");
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, LX, 40, { fit: [LW - 10, 100] });
+    } else {
+      const s = ajustarFuente(doc, FT, "CANELÓN", LW, 40);
+      doc.font(FT).fontSize(s).fillColor(C.texto).text("CANELÓN", LX, 70, { lineBreak: false });
+    }
 
-      doc.font("Helvetica").fontSize(10).fillColor(COLOR_CAFE_SUAVE);
-      doc.text(String(item.qty), W - M - 140, y + 2, { width: 60, align: "center" });
+    // ---------- Título + píldora ----------
+    const titulo = "FACTURA";
+    const tSize = ajustarFuente(doc, FT, titulo, RW, 76);
+    const baseline = 118;
+    const hoy = new Date().toLocaleDateString("es-GT", { day: "numeric", month: "long", year: "numeric" });
 
-      doc.font("Helvetica-Bold").fontSize(11).fillColor(COLOR_CAFE);
-      doc.text(`Q${item.precio * item.qty}`, W - M - 70, y + 2, { width: 70, align: "right" });
+    doc.roundedRect(RX, 112, RW, 56, 14).fill(C.pildora);
 
-      y += 26;
-      dottedLine(doc, M, y, W - M, COLOR_LINEA);
-      y += 14;
-    });
+    doc.font(FT).fontSize(tSize);
+    const asc = (doc._font.ascender / 1000) * tSize;
+    doc.fillColor(C.texto).text(titulo, RX, baseline - asc, { lineBreak: false });
 
-    y += 4;
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(C.texto);
+    doc.text(`No. ${numero}`, RX + 14, 126, { lineBreak: false });
+    doc.text(hoy, RX + 14, 126, { width: RW - 28, align: "right", lineBreak: false });
+    doc.text(`Cliente: ${cliente}`, RX + 14, 146, { width: RW - 28, lineBreak: false, ellipsis: true });
 
-    // Bloque de totales
-    doc.font("Helvetica").fontSize(10).fillColor(COLOR_CAFE_SUAVE);
-    doc.text("Total del pedido:", M, y);
-    doc.font("Helvetica-Bold").fillColor(COLOR_CAFE).text(`Q${total}`, W - M - 100, y, { width: 100, align: "right" });
-    y += 18;
-
-    // Franja del anticipo
-    doc.rect(M - 6, y - 4, W - (M - 6) * 2, 26).fill("#f7e6d0");
-    doc.font("Helvetica-Bold").fontSize(11).fillColor(COLOR_CANELA);
-    doc.text("Anticipo pagado (50%):", M, y + 2);
-    doc.text(`Q${anticipo}`, W - M - 100, y + 2, { width: 100, align: "right" });
-    y += 32;
-
-    doc.font("Helvetica").fontSize(10).fillColor(COLOR_CAFE_SUAVE);
-    doc.text("Saldo restante:", M, y);
-    doc.font("Helvetica-Bold").fillColor(COLOR_CAFE).text(`Q${saldo}`, W - M - 100, y, { width: 100, align: "right" });
-
-    y += 26;
-    dottedLine(doc, M, y, W - M);
-    y += 16;
-
-    // Datos del pedido
-    doc.font("Helvetica").fontSize(9.5).fillColor(COLOR_CAFE);
+    // ---------- Columna izquierda ----------
     const fechaFormateada = new Date(fechaEntrega).toLocaleDateString("es-GT", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
     });
 
-    [
-      ["Pedido", orderId],
-      ["Cliente", cliente],
+    // Cada línea es [etiqueta, valor]
+    const seccion = (tituloSec, lineas, y) => {
+      doc.font(FT).fontSize(12).fillColor(C.acento).text(tituloSec, LX, y, { width: LW });
+      y += 20;
+      for (const [label, value] of lineas) {
+        const texto = `${label}: ${value}`;
+        doc.font("Helvetica-Bold").fontSize(8);
+        const h = doc.heightOfString(texto, { width: LW });
+
+        doc.fillColor(C.texto).text(`${label}: `, LX, y, { width: LW, continued: true });
+        doc.font("Helvetica").fillColor(C.suave).text(String(value));
+
+        y += h + 6;
+      }
+      return y + 22;
+    };
+
+    let ly = TOP;
+    ly = seccion("Datos de Canelón:", [
+      ["Instagram", "@canelon_gt"],
+      ["Correo", "canelongt@gmail.com"],
+      ["Horario", "Lunes a sábado, 8:00 AM – 4:00 PM"],
+      ["Ubicación", "Ciudad de Guatemala"],
+    ], ly);
+
+    ly = seccion("Datos del cliente:", [
+      ["Nombre", cliente],
       ["Teléfono", telefono],
-      ["Dirección de entrega", direccionEntrega],
+      ["Dirección", direccionEntrega],
       ["Entrega estimada", fechaFormateada],
-      ["Tarjeta", `**** **** **** ${last4}`],
-      ["Código de transacción", codigoTransaccion],
-    ].forEach(([label, value]) => {
-      doc.font("Helvetica-Bold").text(`${label}: `, M, y, { continued: true });
-      doc.font("Helvetica").fillColor(COLOR_CAFE_SUAVE).text(value);
-      doc.fillColor(COLOR_CAFE);
-      y += 14;
-    });
+    ], ly);
 
-    y += 10;
-    dottedLine(doc, M, y, W - M);
-    y += 20;
-
-    // Código de barras decorativo
-    let x = M + 20;
-    const barcodeY = y;
-    const seed = orderId.replace(/-/g, "");
-    for (let i = 0; i < 50; i++) {
-      const w = (seed.charCodeAt(i % seed.length) % 3) + 1;
-      const h = 34;
-      doc.rect(x, barcodeY, w, h).fill(COLOR_CAFE);
-      x += w + 2;
-    }
-    y += 44;
-    doc.font("Helvetica").fontSize(8).fillColor(COLOR_CAFE_SUAVE)
-      .text(`CANELON-${orderId.slice(0, 8).toUpperCase()}`, M, y, { width: W - M * 2, align: "center" });
-
-    y += 20;
-    doc.font("Helvetica").fontSize(8).fillColor(COLOR_CAFE_SUAVE).text(
-      "Comprobante simulado, generado con fines de demostración.",
-      M, y, { width: W - M * 2, align: "center" }
+    seccion("Información de pago:",
+      metodoPago === "tarjeta"
+        ? [
+            ["Método de pago", "Tarjeta"],
+            ["Tarjeta", `**** **** **** ${last4}`],
+            ["Transacción", codigoTransaccion],
+            ["Anticipo pagado", `Q${anticipo}`],
+            ["Saldo pendiente", `Q${saldo}`],
+          ]
+        : [
+            ["Método de pago", "Contra entrega"],
+            ["A pagar al recibir", `Q${saldo}`],
+          ],
+      ly
     );
+
+    divisor(TOP);
+
+    // ---------- Columna derecha: detalle ----------
+    const colCant = RR - 110;
+    const nameW = colCant - RX - 10;
+    let ry = TOP;
+
+    doc.font(FT).fontSize(10).fillColor(C.acento);
+    doc.text("DESCRIPCIÓN", RX, ry, { lineBreak: false });
+    doc.text("CANT.", colCant, ry, { width: 40, align: "center", lineBreak: false });
+    doc.text("SUBTOTAL", RR - 70, ry, { width: 70, align: "right", lineBreak: false });
+    ry += 20;
+    doc.moveTo(RX, ry).lineTo(RR, ry).lineWidth(1).strokeColor(C.linea).stroke();
+    ry += 16;
+
+    const terminosY = CB - P - 52;
+
+    for (const item of items) {
+      const detalle = item.detalle ? String(item.detalle) : "";
+
+      doc.font("Helvetica-Bold").fontSize(9);
+      const h = doc.heightOfString(item.nombre, { width: nameW });
+      let hd = 0;
+      if (detalle) {
+        doc.font("Helvetica").fontSize(7.5);
+        hd = doc.heightOfString(detalle, { width: nameW }) + 2;
+      }
+
+      // Salto de página si no cabe
+      if (ry + h + hd + 20 > terminosY - 110) {
+        doc.addPage();
+        pintarFondo();
+        divisor(CM + P);
+        ry = CM + P;
+      }
+
+      doc.font("Helvetica-Bold").fontSize(9).fillColor(C.texto);
+      doc.text(item.nombre, RX, ry, { width: nameW });
+      doc.text(String(item.qty), colCant, ry, { width: 40, align: "center", lineBreak: false });
+      doc.text(`Q${item.precio * item.qty}`, RR - 70, ry, { width: 70, align: "right", lineBreak: false });
+
+      if (detalle) {
+        doc.font("Helvetica").fontSize(7.5).fillColor(C.suave);
+        doc.text(detalle, RX, ry + h + 2, { width: nameW });
+      }
+
+      ry += Math.max(h, 12) + hd + 16;
+    }
+
+    // ---------- Totales ----------
+    if (ry > terminosY - 110) {
+      doc.addPage();
+      pintarFondo();
+      divisor(CM + P);
+      ry = CM + P;
+    }
+
+    ry += 14;
+    const fila = (label, valor) => {
+      doc.font(FT).fontSize(10).fillColor(C.acento)
+        .text(label, RR - 190, ry, { width: 120, align: "right", lineBreak: false });
+      doc.font("Helvetica-Bold").fontSize(9).fillColor(C.texto)
+        .text(valor, RR - 60, ry + 1, { width: 60, align: "right", lineBreak: false });
+      ry += 20;
+    };
+    const lineaTotales = () => {
+      doc.moveTo(RX, ry - 4).lineTo(RR, ry - 4).lineWidth(1).strokeColor(C.linea).stroke();
+      ry += 8;
+    };
+
+    if (metodoPago === "tarjeta") {
+      fila("Total:", `Q${total}`);
+      fila("Anticipo (50%):", `Q${anticipo}`);
+      lineaTotales();
+      fila("Saldo:", `Q${saldo}`);
+    } else {
+      fila("Total:", `Q${total}`);
+      lineaTotales();
+      fila("A pagar al recibir:", `Q${saldo}`);
+    }
+
+    // ---------- Términos y condiciones ----------
+    doc.font(FT).fontSize(11).fillColor(C.acento)
+      .text("Términos y Condiciones:", RX, terminosY, { width: RW, align: "right", lineBreak: false });
+    doc.font("Helvetica-Bold").fontSize(6.5).fillColor(C.suave)
+      .text(
+        "Los pedidos se solicitan con al menos 3 días de anticipación. " +
+        "Conserva este comprobante para cualquier aclaración sobre tu pedido.",
+        RX, terminosY + 20, { width: RW, align: "right" }
+      );
 
     doc.end();
     stream.on("finish", resolve);
     stream.on("error", reject);
   });
-}
-
-function dottedLine(doc, x1, y, x2, color = "#c9b89e") {
-  doc.save();
-  doc.dash(1, { space: 2 }).moveTo(x1, y).lineTo(x2, y).strokeColor(color).stroke();
-  doc.undash();
-  doc.restore();
 }
 
 export default router;

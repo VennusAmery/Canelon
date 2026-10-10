@@ -22,22 +22,17 @@ function minFechaEntrega() {
 
 function formatExpiry(value) {
   const digits = value.replace(/\D/g, "").slice(0, 4);
-
   if (digits.length <= 2) return digits;
-
   return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 }
 
-export default function CheckoutModal({
-  items,
-  total,
-  onClose,
-  onSuccess,
-}) {
+export default function CheckoutModal({ items, total, onClose, onSuccess }) {
   const [step, setStep] = useState("datos"); // datos | pago | listo
 
   const [cliente, setCliente] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [direccionEntrega, setDireccionEntrega] = useState("");
+  const [fechaEntrega, setFechaEntrega] = useState(minFechaEntrega());
 
   const [numero, setNumero] = useState("");
   const [nombreTarjeta, setNombreTarjeta] = useState("");
@@ -51,25 +46,36 @@ export default function CheckoutModal({
   const anticipo = Math.round(total * 0.5);
   const saldo = total - anticipo;
 
-const [direccionEntrega, setDireccionEntrega] = useState("");
-const [fechaEntrega, setFechaEntrega] = useState(minFechaEntrega());
+  // Regresa al paso de datos y limpia lo escrito de la tarjeta
+  const handleVolver = () => {
+    setError("");
+    setNumero("");
+    setNombreTarjeta("");
+    setVencimiento("");
+    setCvc("");
+    setStep("datos");
+  };
 
-const handleContinuar = (e) => {
-  e.preventDefault();
-  if (!cliente || !telefono || !direccionEntrega || !fechaEntrega) {
-    setError("Completa todos los campos.");
-    return;
-  }
-  setError("");
-  setStep("pago");
-};
+  const validarDatos = () => {
+    if (!cliente || !telefono || !direccionEntrega || !fechaEntrega) {
+      setError("Completa todos los campos.");
+      return false;
+    }
+    setError("");
+    return true;
+  };
 
-  const handlePagar = async (e) => {
+  // Pago con tarjeta: pasa al paso de pago
+  const handleContinuar = (e) => {
     e.preventDefault();
+    if (!validarDatos()) return;
+    setStep("pago");
+  };
 
+  // Envía el pedido al backend (tarjeta o contra entrega)
+  const enviarPedido = async (metodoPago) => {
     setError("");
     setLoading(true);
-
     try {
       const data = await createOrder({
         cliente,
@@ -77,38 +83,45 @@ const handleContinuar = (e) => {
         items,
         direccionEntrega,
         fechaEntrega,
-        tarjeta: {
-          numero,
-          nombre: nombreTarjeta,
-          vencimiento,
-          cvc,
-        },
+        metodoPago,
+        ...(metodoPago === "tarjeta" && {
+          tarjeta: {
+            numero,
+            nombre: nombreTarjeta,
+            vencimiento,
+            cvc,
+          },
+        }),
       });
-
       setResultado(data);
       setStep("listo");
     } catch (err) {
-      setError(err.message || "No se pudo procesar el pago.");
+      setError(err.message || "No se pudo procesar el pedido.");
     } finally {
       setLoading(false);
     }
   };
+
+  const handlePagar = (e) => {
+    e.preventDefault();
+    enviarPedido("tarjeta");
+  };
+
+  const handleContraEntrega = () => {
+    if (!validarDatos()) return;
+    enviarPedido("contra_entrega");
+  };
+
+  const esContraEntrega = resultado?.metodoPago === "contra_entrega";
 
   return (
     <div
       className="checkout-overlay"
       onClick={step !== "listo" ? onClose : undefined}
     >
-      <div
-        className="checkout-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="checkout-modal" onClick={(e) => e.stopPropagation()}>
         {step !== "listo" && (
-          <button
-            className="checkout-close"
-            onClick={onClose}
-            aria-label="Cerrar"
-          >
+          <button className="checkout-close" onClick={onClose} aria-label="Cerrar">
             <X size={18} />
           </button>
         )}
@@ -145,32 +158,41 @@ const handleContinuar = (e) => {
               <label>
                 Dirección de entrega
                 <textarea
-                    rows={2}
-                    value={direccionEntrega}
-                    onChange={(e) => setDireccionEntrega(e.target.value)}
-                    required
+                  rows={2}
+                  value={direccionEntrega}
+                  onChange={(e) => setDireccionEntrega(e.target.value)}
+                  required
                 />
-                </label>
-                <label>
+              </label>
+
+              <label>
                 Fecha de entrega deseada
                 <input
-                    type="date"
-                    min={minFechaEntrega()}
-                    value={fechaEntrega}
-                    onChange={(e) => setFechaEntrega(e.target.value)}
-                    required
+                  type="date"
+                  min={minFechaEntrega()}
+                  value={fechaEntrega}
+                  onChange={(e) => setFechaEntrega(e.target.value)}
+                  required
                 />
-                </label>
-                <p className="checkout-note">Los pedidos deben solicitarse con al menos 3 días de anticipación.</p>
+              </label>
 
-              {error && (
-                <p className="checkout-error">
-                  {error}
-                </p>
-              )}
+              <p className="checkout-note">
+                Los pedidos deben solicitarse con al menos 3 días de anticipación.
+              </p>
 
-              <button type="submit">
-                Continuar al pago
+              {error && <p className="checkout-error">{error}</p>}
+
+              <button type="submit" disabled={loading}>
+                Pagar anticipo con tarjeta
+              </button>
+
+              <button
+                type="button"
+                className="checkout-alt"
+                onClick={handleContraEntrega}
+                disabled={loading}
+              >
+                {loading ? "Procesando..." : "Pago contra entrega"}
               </button>
             </form>
           </>
@@ -185,12 +207,10 @@ const handleContinuar = (e) => {
                 <span>Total del pedido</span>
                 <strong>Q{total}</strong>
               </div>
-
               <div className="checkout-summary-highlight">
                 <span>Anticipo a pagar ahora (50%)</span>
                 <strong>Q{anticipo}</strong>
               </div>
-
               <div>
                 <span>Saldo restante</span>
                 <strong>Q{saldo}</strong>
@@ -205,9 +225,7 @@ const handleContinuar = (e) => {
                   inputMode="numeric"
                   placeholder="0000 0000 0000 0000"
                   value={numero}
-                  onChange={(e) =>
-                    setNumero(formatCardNumber(e.target.value))
-                  }
+                  onChange={(e) => setNumero(formatCardNumber(e.target.value))}
                   required
                 />
               </label>
@@ -217,9 +235,7 @@ const handleContinuar = (e) => {
                 <input
                   type="text"
                   value={nombreTarjeta}
-                  onChange={(e) =>
-                    setNombreTarjeta(e.target.value)
-                  }
+                  onChange={(e) => setNombreTarjeta(e.target.value)}
                   required
                 />
               </label>
@@ -231,11 +247,7 @@ const handleContinuar = (e) => {
                     type="text"
                     placeholder="MM/AA"
                     value={vencimiento}
-                    onChange={(e) =>
-                      setVencimiento(
-                        formatExpiry(e.target.value)
-                      )
-                    }
+                    onChange={(e) => setVencimiento(formatExpiry(e.target.value))}
                     required
                   />
                 </label>
@@ -247,56 +259,76 @@ const handleContinuar = (e) => {
                     inputMode="numeric"
                     maxLength={4}
                     value={cvc}
-                    onChange={(e) =>
-                      setCvc(
-                        e.target.value.replace(/\D/g, "")
-                      )
-                    }
+                    onChange={(e) => setCvc(e.target.value.replace(/\D/g, ""))}
                     required
                   />
                 </label>
               </div>
 
-              {error && (
-                <p className="checkout-error">
-                  {error}
-                </p>
-              )}
+              {error && <p className="checkout-error">{error}</p>}
 
               <button type="submit" disabled={loading}>
-                {loading
-                  ? "Procesando..."
-                  : `Pagar Q${anticipo}`}
+                {loading ? "Procesando..." : `Pagar Q${anticipo}`}
               </button>
 
-              <p className="checkout-note">
-                Esto es una simulación — no se realiza ningún
-                cobro real.
-              </p>
+              <button
+                type="button"
+                className="checkout-alt"
+                onClick={handleVolver}
+                disabled={loading}
+              >
+                ← Cambiar método de pago
+              </button>
             </form>
           </>
         )}
 
         {step === "listo" && resultado && (
           <div className="checkout-success">
-            <h2>¡Pago aprobado!</h2>
+            <h2>{esContraEntrega ? "¡Pedido recibido!" : "¡Pago aprobado!"}</h2>
 
             <p>
-              Tu anticipo fue procesado correctamente.
+              {esContraEntrega
+                ? "Pagarás el total al recibir tu pedido."
+                : "Tu anticipo fue procesado correctamente."}
             </p>
 
-                <div className="checkout-summary">
-                <div><span>Código de transacción</span><strong>{resultado.codigoTransaccion}</strong></div>
-                <div className="checkout-summary-highlight">
-                    <span>Anticipo pagado</span><strong>Q{resultado.anticipo}</strong>
-                </div>
-                <div><span>Saldo restante</span><strong>Q{resultado.saldo}</strong></div>
+            <div className="checkout-summary">
+              {!esContraEntrega && (
                 <div>
-                    <span>Fecha de entrega</span>
-                    <strong>
-                    {new Date(resultado.fechaEntrega).toLocaleDateString("es-GT", { day: "numeric", month: "long", year: "numeric" })}
-                    </strong>
+                  <span>Código de transacción</span>
+                  <strong>{resultado.codigoTransaccion}</strong>
                 </div>
+              )}
+
+              {esContraEntrega ? (
+                <div className="checkout-summary-highlight">
+                  <span>A pagar al recibir</span>
+                  <strong>Q{resultado.saldo}</strong>
+                </div>
+              ) : (
+                <>
+                  <div className="checkout-summary-highlight">
+                    <span>Anticipo pagado</span>
+                    <strong>Q{resultado.anticipo}</strong>
+                  </div>
+                  <div>
+                    <span>Saldo restante</span>
+                    <strong>Q{resultado.saldo}</strong>
+                  </div>
+                </>
+              )}
+
+              <div>
+                <span>Fecha de entrega</span>
+                <strong>
+                  {new Date(resultado.fechaEntrega).toLocaleDateString("es-GT", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </strong>
+              </div>
             </div>
 
             <a
@@ -305,16 +337,10 @@ const handleContinuar = (e) => {
               target="_blank"
               rel="noreferrer"
             >
-              Ver comprobante de pago
+              Ver comprobante
             </a>
 
-            <button
-              onClick={() => {
-                onSuccess(resultado);
-              }}
-            >
-              Listo
-            </button>
+            <button onClick={() => onSuccess(resultado)}>Listo</button>
           </div>
         )}
       </div>
