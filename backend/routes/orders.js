@@ -497,6 +497,7 @@ function generarComprobantePDF({
       .text(
         "Los pedidos se solicitan con al menos 3 días de anticipación. " +
         "Conserva este comprobante para cualquier aclaración sobre tu pedido.",
+        "!Consigue 5 facturas y gana un postre gratis!",
         RX, terminosY + 20, { width: RW, align: "right" }
       );
 
