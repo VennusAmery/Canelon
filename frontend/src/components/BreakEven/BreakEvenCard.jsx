@@ -1,37 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Target } from "lucide-react";
-import { API_ORIGIN } from "../../api/client.js";
-
-function api(path, method = "GET", body) {
-  const token = localStorage.getItem("admin_token");
-  return fetch(`${API_ORIGIN}/api/admin/equilibrio${path}`, {
-    method,
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: body ? JSON.stringify(body) : undefined,
-  }).then((r) => r.json());
-}
+import { eqApi, fmtQ } from "../../api/equilibrio.js";
+import "./BreakEven.css";
 
 export default function BreakEvenCard() {
   const [d, setD] = useState(null);
+  const [error, setError] = useState("");
   const [concepto, setConcepto] = useState("");
   const [monto, setMonto] = useState("");
   const [pct, setPct] = useState("");
 
-  const load = () => api("").then((x) => { setD(x); setPct(x.cvu_porcentaje); });
+  const load = () =>
+    eqApi("")
+      .then((x) => { setD(x); setPct(x.cvu_porcentaje); setError(""); })
+      .catch((e) => setError(e.message));
+
   useEffect(() => { load(); }, []);
 
-  const addCosto = async (e) => {
-    e.preventDefault();
-    await api("/costos", "POST", { concepto, monto });
-    setConcepto(""); setMonto(""); load();
+  const run = async (fn) => {
+    try { await fn(); await load(); } catch (e) { setError(e.message); }
   };
 
-  if (!d) return null;
+  const addCosto = (e) => {
+    e.preventDefault();
+    run(async () => {
+      await eqApi("/costos", "POST", { concepto, monto });
+      setConcepto(""); setMonto("");
+    });
+  };
+
+  if (!d) return error ? <p className="be-error">{error}</p> : null;
+
   const progreso = d.pe_ventas ? Math.min(100, (d.ventas_mes / d.pe_ventas) * 100) : 0;
 
   return (
     <div className="dash-card dash-card-wide be-card">
       <h3><Target size={16} /> Punto de equilibrio mensual</h3>
+      {error && <p className="be-error">{error}</p>}
 
       <div className="be-grid">
         <div>
@@ -40,13 +45,13 @@ export default function BreakEvenCard() {
             {d.costos.map((c) => (
               <li key={c.id}>
                 <span>{c.concepto}</span>
-                <strong>Q{Number(c.monto).toFixed(2)}</strong>
-                <button onClick={() => api(`/costos/${c.id}`, "DELETE").then(load)} aria-label="Eliminar">
+                <strong>{fmtQ(c.monto)}</strong>
+                <button onClick={() => run(() => eqApi(`/costos/${c.id}`, "DELETE"))} aria-label="Eliminar">
                   <Trash2 size={14} />
                 </button>
               </li>
             ))}
-            <li className="be-total"><span>Total CF</span><strong>Q{d.cf.toFixed(2)}</strong></li>
+            <li className="be-total"><span>Total CF</span><strong>{fmtQ(d.cf)}</strong></li>
           </ul>
 
           <form className="be-form" onSubmit={addCosto}>
@@ -58,21 +63,25 @@ export default function BreakEvenCard() {
           <label className="be-cvu">
             Costo variable (% del precio)
             <input type="number" min="0" max="99" value={pct} onChange={(e) => setPct(e.target.value)} />
-            <button onClick={() => api("/config", "PUT", { cvu_porcentaje: pct }).then(load)}>Guardar</button>
+            <button onClick={() => run(() => eqApi("/config", "PUT", { cvu_porcentaje: pct }))}>Guardar</button>
           </label>
         </div>
 
         <div>
           <h4>Resultado</h4>
-          <p>PVU promedio: <strong>Q{d.pvu}</strong> · CVU: <strong>Q{d.cvu}</strong></p>
+          <p>PVU promedio: <strong>{fmtQ(d.pvu)}</strong> · CVU: <strong>{fmtQ(d.cvu)}</strong></p>
           <p>Margen de contribución: <strong>{d.margen_contribucion}%</strong></p>
-          <p className="be-big">Necesitas vender <strong>Q{d.pe_ventas ?? "—"}</strong> al mes</p>
+          <p className="be-big">Necesitas vender <strong>{fmtQ(d.pe_ventas)}</strong> al mes</p>
           <p>o aprox. <strong>{d.pe_unidades ?? "—"}</strong> unidades para no perder.</p>
 
           <div className="be-bar"><div style={{ width: `${progreso}%` }} /></div>
           <p>
-            Ventas del mes: <strong>Q{d.ventas_mes}</strong>{" "}
-            {d.alcanzado ? "✅ ¡Ya superaste el punto de equilibrio!" : `· faltan Q${d.faltante ?? "—"}`}
+            Ventas del mes: <strong>{fmtQ(d.ventas_mes)}</strong>{" "}
+            {d.pe_ventas == null
+              ? "· sin datos suficientes"
+              : d.alcanzado
+                ? "✅ ¡Ya superaste el punto de equilibrio!"
+                : `· faltan ${fmtQ(d.faltante)}`}
           </p>
         </div>
       </div>
