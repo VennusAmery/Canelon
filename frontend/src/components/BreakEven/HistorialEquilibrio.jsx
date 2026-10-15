@@ -89,7 +89,7 @@ export default function HistorialEquilibrio() {
 if (!data) return error ? <p className="be-error">{error}</p> : <Loader compact />;
 
   const filas = data.actual ? [...data.meses, data.actual] : data.meses;
-  const chart = filas.map((f) => ({ mes: f.etiqueta, Ventas: f.ventas, "Punto de equilibrio": f.pe }));
+  const chart = filas.map((f) => ({ mes: f.etiqueta, Ventas: f.ventas, "Viabilidad": f.pe }));
 
   return (
     <div className="dash-card dash-card-wide">
