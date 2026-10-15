@@ -62,7 +62,10 @@ export default function App() {
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="pedidos" element={<AdminPedidos />} />
             <Route path="calendario" element={<AdminCalendario />} />
-            <Route path="equilibrio" element={<PuntoEquilibrio />} />
+            <Route
+              path="punto-equilibrio"
+              element={<PuntoEquilibrio />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>
