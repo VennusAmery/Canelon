@@ -109,7 +109,7 @@ if (!data) return error ? <p className="be-error">{error}</p> : <Loader compact 
           <CartesianGrid strokeDasharray="3 3" stroke="#e5d8c3" />
           <XAxis dataKey="mes" /><YAxis /><Tooltip formatter={(v) => fmtQ(v)} /><Legend />
           <Bar dataKey="Ventas" fill="#e0913c" radius={[8, 8, 0, 0]} />
-          <Line dataKey="Punto de equilibrio" stroke="#3a2a1e" strokeWidth={2} dot={false} connectNulls />
+          <Line dataKey="Viabilidad" stroke="#3a2a1e" strokeWidth={2} dot={false} connectNulls />
         </ComposedChart>
       </ResponsiveContainer>
 
