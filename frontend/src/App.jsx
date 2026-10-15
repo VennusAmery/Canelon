@@ -18,7 +18,7 @@ import AdminUsers from "./pages/AdminUsers.jsx";
 import AdminPedidos from "./pages/AdminPedidos.jsx";
 import PuntoEquilibrio from "./pages/PuntoEquilibrio.jsx";
 import AdminCalendario from "./pages/AdminCalendario.jsx";
-
+import AdminManual from "./pages/AdminManual/AdminManual";
 
 function goTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -60,12 +60,10 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="stock" element={<AdminStock />} />
             <Route path="usuarios" element={<AdminUsers />} />
+            <Route path="manual" element={<AdminManual />}/>
             <Route path="pedidos" element={<AdminPedidos />} />
             <Route path="calendario" element={<AdminCalendario />} />
-            <Route
-              path="punto-equilibrio"
-              element={<PuntoEquilibrio />}
-            />
+            <Route path="punto-equilibrio" element={<PuntoEquilibrio />} />
           </Route>
         </Routes>
       </BrowserRouter>

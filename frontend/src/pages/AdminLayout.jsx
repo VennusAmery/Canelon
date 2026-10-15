@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu as MenuIcon,
   X,
+  BookOpen,
 } from "lucide-react";
 import "./AdminLayout.css";
 
@@ -30,6 +31,7 @@ const LINKS = [
   { to: "/admin/calendario", label: "Calendario", icon: CalendarDays },
   { to: "/admin/stock", label: "Inventario", icon: Package },
   { to: "/admin/punto-equilibrio", label: "Viabilidad Financiera", icon: Target},  
+  { to: "/admin/manual", label: "Manual de usuario", icon: BookOpen },
   { to: "/admin/usuarios", label: "Crear usuario", icon: UserPlus },
 ];
 
