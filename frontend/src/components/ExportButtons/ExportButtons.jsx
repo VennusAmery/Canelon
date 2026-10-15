@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FileSpreadsheet, FileText } from "lucide-react";
 import { buildFullReport } from "../../utils/fullReport.js";
-import { exportExcel, exportPDF } from "../../utils/exportreport.js";
+import { exportExcel, exportPDF } from "../../utils/exportReport.js";
 import "./ExportButtons.css";
 
 export default function ExportButtons({ getReport = buildFullReport }) {
