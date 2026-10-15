@@ -8,8 +8,8 @@ const router = Router();
 //  - ventas_historicas: los 500 registros simulados (seed de ventas)
 //  - orders / order_items: los pedidos reales hechos desde la tienda
 // Los pedidos cancelados o con pago rechazado no cuentan.
-const VALIDO = "o.estado <> 'cancelado' AND o.estado_pago <> 'rechazado'";
-
+const VALIDO =
+  "o.estado <> 'cancelado' AND o.estado_pago = 'aprobado'";
 // Unifica nombres de categoría entre el menú ("Pies") y el histórico ("Pie")
 const CATEGORIA = { Pies: "Pie" };
 const normCategoria = (c) => CATEGORIA[c] || c || "Otros";

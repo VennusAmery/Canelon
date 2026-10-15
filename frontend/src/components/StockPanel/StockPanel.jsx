@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
 import { API_ORIGIN } from "../../api/client.js";
 import "./StockPanel.css";
+import ExportButtons from "../ExportButtons/ExportButtons.jsx";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidad", "lata", "paquete"];
 
@@ -83,6 +84,54 @@ export default function StockPanel() {
 const alertas = rows.filter((r) => ["agotado", "bajo"].includes(estado(r))).length;
 const agotados = rows.filter((r) => estado(r) === "agotado").length;
 
+const filaStock = (r) => {
+  const editable = !esProductos || r.tipo_pedido === "stock";
+  const e = estado(r);
+  return {
+    nombre: r.nombre,
+    tipo: esProductos ? (r.tipo_pedido === "stock" ? "Stock" : "Bajo pedido") : r.unidad,
+    stock: editable ? Number(r.stock) : "—",
+    minimo: editable ? Number(r.stock_minimo) : "—",
+    estado: LABELS[e],
+    faltante: editable && ["agotado", "bajo"].includes(e) ? Number(r.stock_minimo) - Number(r.stock) : 0,
+  };
+};
+const columnasStock = [
+  { header: esProductos ? "Producto" : "Ingrediente", key: "nombre" },
+  { header: esProductos ? "Tipo" : "Unidad", key: "tipo" },
+  { header: "Stock", key: "stock" },
+  { header: "Mínimo", key: "minimo" },
+  { header: "Estado", key: "estado" },
+  { header: "Faltante", key: "faltante" },
+];
+const conteoEstados = Object.entries(
+  rows.reduce((a, r) => {
+    const k = LABELS[estado(r)];
+    a[k] = (a[k] || 0) + 1;
+    return a;
+  }, {})
+).map(([label, value]) => ({ label, value }));
+
+const reporteStock = {
+  filename: esProductos ? "canelon_stock_productos" : "canelon_stock_ingredientes",
+  title: esProductos ? "Inventario de productos" : "Inventario de ingredientes",
+  subtitle: `${rows.length} registros`,
+  kpis: [
+    { label: "Registros", value: rows.length },
+    { label: "Por reponer", value: alertas },
+    { label: "Agotados", value: agotados },
+  ],
+  charts: [{ type: "pie", title: "Estado del inventario", data: conteoEstados }],
+  sections: [
+    { title: "Inventario completo", columns: columnasStock, rows: rows.map(filaStock) },
+    {
+      title: "Por reponer",
+      columns: columnasStock,
+      rows: rows.filter((r) => ["agotado", "bajo"].includes(estado(r))).map(filaStock),
+    },
+  ],
+};
+
 const q = normalizar(busqueda.trim());
 const visibles = rows.filter((r) => {
   const e = estado(r);
@@ -160,6 +209,11 @@ const visibles = rows.filter((r) => {
         {alertas > 0 && (
           <span className="stock-alert">{alertas} por reponer</span>
         )}
+
+        <div style={{ marginLeft: "auto" }}>
+          <ExportButtons {...reporteStock} />
+        </div>
+        
       </div>
 
       {error && <p className="stock-error">{error}</p>}

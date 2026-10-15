@@ -13,6 +13,10 @@ import contactoRoutes from "./routes/contacto.js";
 import "express-async-errors";
 import fs from "fs";
 import adminStockRoutes from "./routes/adminStock.js";
+import adminEquilibrioRoutes from "./routes/adminEquilibrio.js";
+
+
+import adminExportRoutes from "./routes/adminExport.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -32,6 +36,15 @@ app.use("/api/admin/pedidos", adminPedidosRoutes);
 app.use("/api/admin/metricas", adminMetricasRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/admin/stock", adminStockRoutes);
+app.use("/api/admin/equilibrio", adminEquilibrioRoutes);
+
+app.use("/api/admin/export", adminExportRoutes);
+app.get("/api/admin/export/test", (req, res) => {
+  res.json({
+    ok: true,
+    message: "La ruta de prueba funciona desde server.js"
+  });
+});
 
 app.get("/api", (req, res) => {
   res.json({ ok: true, message: "API de Canelon funcionando." });

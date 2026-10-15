@@ -1,0 +1,79 @@
+.export-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Texto encima de los botones */
+.export-caption {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cafe-suave);
+  text-align: right;
+}
+
+/* Grupo de botones */
+.export-btns {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Estilo de los botones */
+.export-btns button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid var(--miel, #e0913c);
+  background: var(--miel, #e0913c);
+  color: var(--azucar, #fffaf2);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* Efecto al pasar el cursor */
+.export-btns button:hover {
+  background: var(--canela, #b5651d);
+  border-color: var(--canela, #b5651d);
+}
+
+/* Botones deshabilitados */
+.export-btns button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Animación de carga */
+.spin {
+  animation: exp-spin 1s linear infinite;
+}
+
+@keyframes exp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Adaptación para celulares */
+@media (max-width: 480px) {
+  .export-btns {
+    gap: 8px;
+  }
+
+  .export-btns button {
+    padding: 9px 13px;
+    font-size: 12px;
+  }
+}

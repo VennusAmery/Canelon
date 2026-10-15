@@ -242,3 +242,43 @@ body {
   color: var(--canela);
   border-bottom-color: var(--canela);
 }
+
+
+
+.be-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding-bottom: 16px; }
+.be-list { list-style: none; padding: 0; margin: 0 0 12px; }
+.be-list li { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e5d8c3; }
+.be-list li span { flex: 1; }
+.be-list button { background: none; border: none; color: var(--cafe-suave); }
+.be-total { font-weight: 800; }
+.be-form, .be-cvu { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 13px; align-items: center; }
+.be-form input, .be-cvu input { padding: 8px 10px; border: 1px solid #e5d8c3; border-radius: 8px; width: 120px; }
+.be-form input:first-child { flex: 1; min-width: 140px; }
+.be-form button, .be-cvu button { border: none; border-radius: 999px; padding: 8px 16px; background: var(--miel); color: var(--azucar); font-weight: 700; }
+.be-big { font-size: 18px; }
+.be-bar { height: 10px; background: #f1ede6; border-radius: 99px; overflow: hidden; margin: 10px 0; }
+.be-bar div { height: 100%; background: var(--miel); }
+@media (max-width: 900px) { .be-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Botones de exportación ---------- */
+.dash-export {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 0 24px auto;
+}
+
+.dash-export button {
+  flex-shrink: 0;
+}
+
+/* En pantallas pequeñas, permitir que los botones se acomoden */
+@media (max-width: 480px) {
+  .dash-export {
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}

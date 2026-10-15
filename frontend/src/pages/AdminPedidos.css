@@ -110,3 +110,235 @@
 .ap-tabs-metodo {
   margin-top: 10px;
 }
+
+
+/* Acciones del encabezado */
+.ap-header-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/* Campanita */
+.ap-notificaciones {
+  position: relative;
+}
+
+.ap-campana {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e5d8c3;
+  border-radius: 50%;
+  background: #fffaf2;
+  color: #3a2a1e;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ap-campana:hover {
+  background: #f3e5d2;
+}
+
+/* Punto rojo de la campanita */
+.ap-campana-punto {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background: #dc2626;
+  border: 2px solid #fffaf2;
+  border-radius: 50%;
+}
+
+/* Menú desplegable */
+.ap-notificaciones-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1000;
+  width: 330px;
+  max-width: calc(100vw - 32px);
+  max-height: 400px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5d8c3;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(58, 42, 30, 0.16);
+}
+
+.ap-notificaciones-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee4d7;
+  color: #3a2a1e;
+}
+
+.ap-notificaciones-head button {
+  display: flex;
+  border: none;
+  background: transparent;
+  color: #7a6a5c;
+  cursor: pointer;
+}
+
+.ap-notificaciones-vacio {
+  padding: 18px;
+  margin: 0;
+  color: #7a6a5c;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Cada notificación */
+.ap-notificacion {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-bottom: 1px solid #f1e9df;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ap-notificacion:hover {
+  background: #fffaf2;
+}
+
+.ap-notificacion-punto,
+.ap-pedido-punto {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.ap-notificacion-punto {
+  margin-top: 5px;
+}
+
+.ap-notificacion-punto.atrasado,
+.ap-notificacion-punto.urgente,
+.ap-pedido-punto.atrasado,
+.ap-pedido-punto.urgente {
+  background: #dc2626;
+}
+
+.ap-notificacion-punto.proximo,
+.ap-pedido-punto.proximo {
+  background: #e0913c;
+}
+
+.ap-notificacion-punto.listo,
+.ap-pedido-punto.listo {
+  background: #23834d;
+}
+
+.ap-notificacion-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ap-notificacion-contenido strong {
+  color: #3a2a1e;
+  font-size: 13px;
+}
+
+.ap-notificacion-contenido span {
+  color: #7a6a5c;
+  font-size: 12px;
+}
+
+.ap-notificacion-contenido small {
+  color: #9b8b7c;
+  font-size: 11px;
+}
+
+/* Indicador junto al cliente */
+.ap-cliente-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .ap-header-acciones {
+    gap: 8px;
+  }
+
+  .ap-notificaciones-menu {
+    right: -8px;
+  }
+}
+
+
+
+/* Encabezado del panel de pedidos */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Campanita y botones de exportación a la derecha */
+.ap-header-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Contenedor de la campanita */
+.ap-notificaciones {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Campanita */
+.ap-campana {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e5d8c3;
+  border-radius: 50%;
+  background: #fffaf2;
+  color: #3a2a1e;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ap-campana:hover {
+  background: #f3e5d2;
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 600px) {
+  .dash-header {
+    flex-wrap: wrap;
+  }
+
+  .ap-header-acciones {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
