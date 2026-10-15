@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import BreakEvenCard from "../components/BreakEven/BreakEvenCard.jsx";
 import HistorialEquilibrio from "../components/BreakEven/HistorialEquilibrio.jsx";
 import "../components/BreakEven/BreakEven.css";
-import "./PuntoEquilibrio.css";
+import "./Puntoequilibrio.css";
 import ExportButtons from "../components/ExportButtons/ExportButtons.jsx";
 import { buildBreakEvenReport } from "../utils/breakEvenReport.js";
 
