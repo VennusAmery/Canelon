@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { eqApi, fmtQ } from "../../api/equilibrio.js";
+import Loader from "../Loader/Loader.jsx";
 
 const COLOR = {
   "Bajo el nivel": "#b5651d",
@@ -85,7 +86,7 @@ export default function HistorialEquilibrio() {
     }
   };
 
-  if (!data) return error ? <p className="be-error">{error}</p> : null;
+if (!data) return error ? <p className="be-error">{error}</p> : <Loader compact />;
 
   const filas = data.actual ? [...data.meses, data.actual] : data.meses;
   const chart = filas.map((f) => ({ mes: f.etiqueta, Ventas: f.ventas, "Punto de equilibrio": f.pe }));

@@ -1,0 +1,40 @@
+.loader {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+.loader-compact { min-height: 240px; }
+
+.loader-img {
+  object-fit: contain;
+  max-width: 60vw;
+  height: auto;
+}
+
+.loader-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cafe-suave, #5c4632);
+}
+
+/* solo para lectores de pantalla */
+.loader-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.loader-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--cafe-suave, #5c4632);
+}

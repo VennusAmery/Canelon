@@ -20,6 +20,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import Loader from "../components/Loader/Loader.jsx";
 
 import { API_ORIGIN } from "../api/client.js";
 import StockLowList from "../components/StockPanel/StockLowList.jsx";
@@ -153,8 +154,8 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <div className="dash-loading">Cargando panel...</div>;
-  }
+  return <Loader />;
+}
 
   if (error || !resumen) {
     return (

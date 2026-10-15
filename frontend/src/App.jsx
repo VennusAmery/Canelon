@@ -17,6 +17,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AdminUsers from "./pages/AdminUsers.jsx";
 import AdminPedidos from "./pages/AdminPedidos.jsx";
 import PuntoEquilibrio from "./pages/PuntoEquilibrio.jsx";
+import AdminCalendario from "./pages/AdminCalendario.jsx";
+
 
 function goTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -59,6 +61,7 @@ export default function App() {
             <Route path="stock" element={<AdminStock />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="pedidos" element={<AdminPedidos />} />
+            <Route path="calendario" element={<AdminCalendario />} />
             <Route path="equilibrio" element={<PuntoEquilibrio />} />
           </Route>
         </Routes>

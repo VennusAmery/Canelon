@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Target } from "lucide-react";
 import { eqApi, fmtQ } from "../../api/equilibrio.js";
 import "./BreakEven.css";
+import Loader from "../Loader/Loader.jsx";
 
 export default function BreakEvenCard() {
   const [d, setD] = useState(null);
@@ -29,7 +30,7 @@ export default function BreakEvenCard() {
     });
   };
 
-  if (!d) return error ? <p className="be-error">{error}</p> : null;
+if (!d) return error ? <p className="be-error">{error}</p> : <Loader compact />;
 
   const progreso = d.pe_ventas ? Math.min(100, (d.ventas_mes / d.pe_ventas) * 100) : 0;
 

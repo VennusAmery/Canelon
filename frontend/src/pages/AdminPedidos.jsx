@@ -4,6 +4,7 @@ import { API_ORIGIN } from "../api/client.js";
 import "./AdminDashboard.css";
 import "./AdminPedidos.css";
 import ExportButtons from "../components/ExportButtons/ExportButtons.jsx";
+import Loader from "../components/Loader/Loader.jsx";
 
 import {
   ClipboardList,
@@ -18,36 +19,12 @@ import {
 const ACTIVOS = "estado=recibido,en_preparacion,listo,entregado";
 
 const TABS = [
-  {
-    id: "por_realizar",
-    label: "Por realizar",
-    query: "estado=recibido,en_preparacion",
-  },
-  {
-    id: "listos",
-    label: "Listos para entregar",
-    query: "estado=listo",
-  },
-  {
-    id: "entregados",
-    label: "Entregados",
-    query: "estado=entregado",
-  },
-  {
-    id: "pago_completo",
-    label: "Pago completo",
-    query: `pago_completo=1&${ACTIVOS}`,
-  },
-  {
-    id: "falta_pago",
-    label: "Falta pago",
-    query: `pago_completo=0&${ACTIVOS}`,
-  },
-  {
-    id: "todos",
-    label: "Todos",
-    query: "",
-  },
+  { id: "por_realizar", label: "Por realizar", query: "estado=recibido,en_preparacion" },
+  { id: "listos", label: "Listos para entregar", query: "estado=listo" },
+  { id: "entregados", label: "Entregados", query: "estado=entregado" },
+  { id: "pago_completo", label: "Pago completo", query: `pago_completo=1&${ACTIVOS}` },
+  { id: "falta_pago", label: "Falta pago", query: `pago_completo=0&${ACTIVOS}` },
+  { id: "todos", label: "Todos", query: "" },
 ];
 
 const METODOS = {
@@ -598,13 +575,18 @@ export default function AdminPedidos() {
       {error && <p className="ap-error">{error}</p>}
 
       {/* Listado de pedidos */}
+      
       {loading ? (
-        <p className="ap-empty">Cargando pedidos...</p>
+        <Loader compact />
       ) : pedidos.length === 0 ? (
+
+
         <p className="ap-empty">
           No hay pedidos en esta vista.
         </p>
       ) : (
+
+        
         <div className="ap-list">
           {pedidos.map((p) => {
             const saldo =
