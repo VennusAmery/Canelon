@@ -36,7 +36,7 @@ if (!d) return error ? <p className="be-error">{error}</p> : <Loader compact />;
 
   return (
     <div className="dash-card dash-card-wide be-card">
-      <h3><Target size={16} /> Punto de equilibrio mensual</h3>
+      <h3><Target size={16} /> Viabilidad Financiera Mensual</h3>
       {error && <p className="be-error">{error}</p>}
 
       <div className="be-grid">
@@ -81,7 +81,7 @@ if (!d) return error ? <p className="be-error">{error}</p> : <Loader compact />;
             {d.pe_ventas == null
               ? "· sin datos suficientes"
               : d.alcanzado
-                ? "✅ ¡Ya superaste el punto de equilibrio!"
+                ? "✅ ¡Ya superaste el minimo!"
                 : `· faltan ${fmtQ(d.faltante)}`}
           </p>
         </div>

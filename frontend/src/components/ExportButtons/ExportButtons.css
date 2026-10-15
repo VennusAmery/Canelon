@@ -1,45 +1,94 @@
+/* ---------- Contenedor de botones Excel y PDF ---------- */
+
 .exp-wrap {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 28px;
-  margin: 0 0 16px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+/* ---------- Botones de exportación ---------- */
 
 .exp-btn {
   display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
+
   border: none;
   background: transparent;
   color: var(--cafe, #3a2a1e);
+
   font-family: inherit;
   font-weight: 700;
-  font-size: 15px;
-  padding: 10px 18px;
+  font-size: 14px;
+
+  padding: 10px 14px;
+  margin: 0;
   border-radius: 12px;
+
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
-.exp-btn svg { color: var(--cafe-suave, #5c4632); }
+/* Iconos */
+.exp-btn svg {
+  flex: 0 0 auto;
+  color: var(--cafe-suave, #5c4632);
+}
 
+/* Hover */
 .exp-btn:hover:not(:disabled) {
   background: rgba(58, 42, 30, 0.07);
   transform: translateY(-1px);
 }
 
+/* Accesibilidad */
 .exp-btn:focus-visible {
   outline: 3px solid var(--cafe, #3a2a1e);
   outline-offset: 2px;
 }
 
-.exp-btn:disabled { opacity: 0.6; cursor: default; }
+/* Deshabilitado */
+.exp-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Mensaje de error ---------- */
 
 .exp-error {
   flex-basis: 100%;
+  margin: 0;
   text-align: right;
   color: #b5651d;
   font-size: 13px;
+}
+
+/* ---------- Pantallas pequeñas ---------- */
+
+@media (max-width: 600px) {
+  .exp-wrap {
+    gap: 4px;
+  }
+
+  .exp-btn {
+    gap: 5px;
+    padding: 9px 10px;
+    font-size: 13px;
+  }
 }

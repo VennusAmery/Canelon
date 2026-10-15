@@ -66,10 +66,21 @@ export default function CartDrawer() {
 
         {items.length > 0 && (
           <div className="cart-footer">
-            <div className="cart-total">
-              <span>Total</span>
-              <span>Q{totalPrice}</span>
-            </div>
+
+        <div className="cart-total">
+          <span>Total</span>
+          <span>
+            Q{Number(totalPrice).toFixed(2)}
+          </span>
+        </div>
+
+        <div className="cart-puntos">
+          <span>✨ Puntos que ganarás</span>
+          <strong>
+            +{Math.floor(Number(totalPrice) / 20)} puntos
+          </strong>
+        </div>
+
             <button className="btn btn-primary" onClick={() => setShowCheckout(true)}>
               Finalizar pedido
             </button>

@@ -1,56 +1,213 @@
-/* ---------- Encabezado con osito (igual que Inventario) ---------- */
+/* ---------- Encabezado con osito ---------- */
+
 .eq-top {
   position: relative;
   min-height: 150px;
 }
-.eq-header { padding-top: 6px; }
+
+.eq-header {
+  padding-top: 6px;
+}
+
 .eq-header h1 {
   font-family: "Fraunces", serif;
   font-size: 34px;
   color: var(--cafe, #3a2a1e);
   margin: 0;
 }
+
 .eq-bear {
   position: absolute;
   right: 56px;
-  bottom: -50px;          /* se asoma sobre el borde de la tarjeta */
+  bottom: -50px;
   width: 190px;
   height: auto;
   z-index: 10;
   pointer-events: none;
 }
 
-/* ---------- Tarjeta blanca ---------- */
+
+/* ---------- Tarjeta principal ---------- */
+
 .eq-card {
   position: relative;
   background: var(--azucar, #fffdf8);
   border-radius: 24px;
   padding: 28px 30px 30px;
   box-shadow: 0 10px 24px rgba(58, 42, 30, 0.06);
+  min-width: 0;
 }
 
-/* ---------- Pestañas tipo pastilla ---------- */
-.eq-tabs {
+
+/* ---------- Barra superior: pestañas + exportación ---------- */
+
+.eq-page .eq-card .eq-toolbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 16px;
+  width: 100%;
+  margin: 0 0 24px;
+  box-sizing: border-box;
 }
-.eq-tab {
-  border: none;
-  background: transparent;
-  color: var(--cafe, #3a2a1e);
-  font-weight: 700;
-  font-size: 15px;
-  padding: 12px 24px;
+
+/* ---------- Pestañas de Viabilidad Financiera e Historial ---------- */
+
+.eq-page .eq-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eq-page .eq-tabs .eq-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 20px;
+  border: 1px solid #e5d8c3;
   border-radius: 999px;
+
+  background: #fffdf8;
+  color: var(--cafe, #3a2a1e);
+
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-.eq-tab:hover { background: rgba(58, 42, 30, 0.07); }
-.eq-tab.active {
+
+/* Efecto al pasar el cursor */
+.eq-page .eq-tabs .eq-tab:hover {
+  background: #f0f0f0;
+  border-color: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+/* Pestaña seleccionada */
+.eq-page .eq-tabs .eq-tab.active {
   background: var(--cafe, #3a2a1e);
-  color: var(--azucar, #fffaf2);
+  color: var(--azucar, #fffdf8);
+  border-color: var(--cafe, #3a2a1e);
+  box-shadow: 0 3px 8px rgba(58, 42, 30, 0.12);
+}
+
+/* Hover de la pestaña seleccionada */
+.eq-page .eq-tabs .eq-tab.active:hover {
+  background: #5c4632;
+  border-color: #5c4632;
+}
+
+/* Accesibilidad */
+.eq-page .eq-tabs .eq-tab:focus-visible {
+  outline: 3px solid var(--miel, #d98f3b);
+  outline-offset: 3px;
+}
+
+/* Pantallas pequeñas */
+@media (max-width: 600px) {
+  .eq-page .eq-tabs .eq-tab {
+    padding: 9px 14px;
+    font-size: 12.5px;
+  }
+}
+
+
+/* Contenedor de los botones Excel y PDF */
+.eq-page .eq-card .eq-toolbar .exp-wrap {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Botones Excel y PDF */
+.eq-page .eq-card .eq-toolbar .exp-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 10px 14px;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Mensaje de error de exportación */
+.eq-page .eq-card .eq-toolbar .exp-error {
+  flex-basis: auto;
+  text-align: right;
+}
+
+/* ---------- Adaptación para pantallas pequeñas ---------- */
+
+@media (max-width: 900px) {
+  .eq-page .eq-card {
+    padding: 20px;
+  }
+
+  .eq-page .eq-card .eq-toolbar {
+    gap: 8px;
+  }
+
+  .eq-page .eq-card .eq-toolbar .eq-tabs {
+    gap: 4px;
+  }
+
+  .eq-page .eq-card .eq-toolbar .eq-tab {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .eq-page .eq-card .eq-toolbar .exp-wrap {
+    gap: 4px;
+  }
+
+  .eq-page .eq-card .eq-toolbar .exp-btn {
+    padding: 9px 10px;
+    gap: 5px;
+    font-size: 13px;
+  }
+}
+
+/* En móviles se permite distribuir los elementos en varias líneas */
+@media (max-width: 600px) {
+  .eq-page .eq-card .eq-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .eq-page .eq-card .eq-toolbar .eq-tabs {
+    flex-wrap: wrap;
+  }
+
+  .eq-page .eq-card .eq-toolbar .exp-wrap {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- Panel de contenido ---------- */
+
+.eq-panel {
+  width: 100%;
+  min-width: 0;
 }
 
 .eq-panel .dash-card {
@@ -61,7 +218,11 @@
   overflow: visible;
 }
 
-/* ---------- Modal ---------- */
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
 .be-modal-overlay {
   position: fixed;
   inset: 0;
@@ -72,6 +233,7 @@
   z-index: 300;
   padding: 20px;
 }
+
 .be-modal {
   position: relative;
   background: var(--azucar, #fffaf2);
@@ -84,10 +246,19 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   animation: be-pop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 @keyframes be-pop {
-  from { opacity: 0; transform: scale(0.95) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
+
 .be-modal-close {
   position: absolute;
   top: 16px;
@@ -103,7 +274,11 @@
   justify-content: center;
   cursor: pointer;
 }
-.be-modal-close:hover { background: #f1ede6; }
+
+.be-modal-close:hover {
+  background: #f1ede6;
+}
+
 .be-modal h2 {
   font-family: "Fraunces", serif;
   font-size: 21px;
@@ -111,11 +286,13 @@
   margin: 0 0 6px;
   padding-right: 28px;
 }
+
 .be-modal-sub {
   font-size: 13.5px;
   color: var(--cafe-suave, #7a6a5c);
   margin: 0 0 22px;
 }
+
 .be-modal label {
   display: block;
   font-size: 13px;
@@ -123,6 +300,7 @@
   color: var(--cafe, #3a2a1e);
   margin-bottom: 16px;
 }
+
 .be-modal input,
 .be-modal select,
 .be-modal textarea {
@@ -137,15 +315,27 @@
   background: #fff;
   box-sizing: border-box;
 }
-.be-modal textarea { resize: vertical; }
+
+.be-modal textarea {
+  resize: vertical;
+}
+
 .be-modal input:focus,
 .be-modal select:focus,
 .be-modal textarea:focus {
   outline: none;
   border-color: var(--miel, #e0913c);
 }
-.be-modal-row { display: flex; gap: 12px; }
-.be-modal-row label { flex: 1; }
+
+.be-modal-row {
+  display: flex;
+  gap: 12px;
+}
+
+.be-modal-row label {
+  flex: 1;
+}
+
 .be-modal-error {
   color: #b5651d;
   background: #fbeede;
@@ -154,6 +344,7 @@
   font-size: 13px;
   margin: 0 0 16px;
 }
+
 .be-modal-submit {
   width: 100%;
   border: none;
@@ -166,30 +357,115 @@
   cursor: pointer;
   transition: background 0.2s ease;
 }
-.be-modal-submit:hover { background: var(--canela, #b5651d); }
-.be-modal-submit:disabled { opacity: 0.6; cursor: default; }
 
-/* ---------- Responsive ---------- */
+.be-modal-submit:hover {
+  background: var(--canela, #b5651d);
+}
+
+.be-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 700px) {
-  .eq-header h1 { font-size: 24px; }
-  .eq-top { min-height: 130px; }
-  .eq-bear { width: 110px; right: 12px; bottom: -30px; }
-  .eq-card { padding: 20px 16px; }
-  .be-modal-row { flex-direction: column; gap: 0; }
-}
-/* ---------- Botones de exportar (solo página Punto de equilibrio) ---------- */
-.eq-page .eq-card .exp-wrap {
-  justify-content: flex-end;
-  gap: 8px;
-  margin: 0 0 12px;
+  .eq-header h1 {
+    font-size: 24px;
+  }
+
+  .eq-top {
+    min-height: 130px;
+  }
+
+  .eq-bear {
+    width: 110px;
+    right: 12px;
+    bottom: -30px;
+  }
+
+  .eq-card {
+    padding: 20px 16px;
+  }
+
+  .be-modal-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
-.eq-page .eq-card .exp-error {
-  text-align: right;
-}
+
+/* ---------- Pantallas pequeñas ---------- */
 
 @media (max-width: 650px) {
-  .eq-page .eq-card .exp-wrap {
-    justify-content: flex-start;
+  .eq-page .eq-card .eq-toolbar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
   }
+
+  .eq-page .eq-card .eq-toolbar .eq-tabs {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .eq-page .eq-card .eq-toolbar .exp-wrap {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .eq-page .eq-card .eq-toolbar .exp-error {
+    text-align: left;
+  }
+}
+
+
+.exp-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin: 0 0 16px;
+}
+
+.exp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  color: var(--cafe, #3a2a1e);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.exp-btn svg { color: var(--cafe-suave, #5c4632); }
+
+.exp-btn:hover:not(:disabled) {
+  background: rgba(58, 42, 30, 0.07);
+  transform: translateY(-1px);
+}
+
+.exp-btn:focus-visible {
+  outline: 3px solid var(--cafe, #3a2a1e);
+  outline-offset: 2px;
+}
+
+.exp-btn:disabled { opacity: 0.6; cursor: default; }
+
+.exp-error {
+  flex-basis: 100%;
+  text-align: right;
+  color: #b5651d;
+  font-size: 13px;
 }

@@ -7,7 +7,7 @@ import ExportButtons from "../components/ExportButtons/ExportButtons.jsx";
 import { buildBreakEvenReport } from "../utils/breakEvenReport.js";
 
 const TABS = [
-  { id: "equilibrio", label: "Punto de equilibrio" },
+  { id: "equilibrio", label: "Viabilidad Financiera" },
   { id: "historial", label: "Historial" },
 ];
 
@@ -24,27 +24,35 @@ export default function PuntoEquilibrio() {
         <img src="/images/pick.png" alt="" className="eq-bear" />
       </div>
 
-      <section className="eq-card">
-  <ExportButtons getReport={buildBreakEvenReport} />
 
-        <div className="eq-tabs" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              className={`eq-tab ${tab === t.id ? "active" : ""}`}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+<section className="eq-card">
+  <div className="eq-toolbar">
+    <div className="eq-tabs" role="tablist">
+      {TABS.map((t) => (
+        <button
+          key={t.id}
+          role="tab"
+          aria-selected={tab === t.id}
+          className={`eq-tab ${tab === t.id ? "active" : ""}`}
+          onClick={() => setTab(t.id)}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
 
-        <div className="eq-panel">
-          {tab === "equilibrio" ? <BreakEvenCard /> : <HistorialEquilibrio />}
-        </div>
-      </section>
+    <ExportButtons getReport={buildBreakEvenReport} />
+  </div>
+
+  <div className="eq-panel">
+    {tab === "equilibrio" ? (
+      <BreakEvenCard />
+    ) : (
+      <HistorialEquilibrio />
+    )}
+  </div>
+</section>
+
     </div>
   );
 }
