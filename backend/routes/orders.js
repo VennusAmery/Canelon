@@ -493,13 +493,14 @@ function generarComprobantePDF({
     // ---------- Términos y condiciones ----------
     doc.font(FT).fontSize(11).fillColor(C.acento)
       .text("Términos y Condiciones:", RX, terminosY, { width: RW, align: "right", lineBreak: false });
-    doc.font("Helvetica-Bold").fontSize(6.5).fillColor(C.suave)
-      .text(
-        "Los pedidos se solicitan con al menos 3 días de anticipación. " +
-        "Conserva este comprobante para cualquier aclaración sobre tu pedido.",
-        "!Consigue 5 facturas y gana un postre gratis!",
-        RX, terminosY + 20, { width: RW, align: "right" }
-      );
+
+doc.font("Helvetica-Bold").fontSize(6.5).fillColor(C.suave)
+  .text(
+    "Los pedidos se solicitan con al menos 3 días de anticipación. " +
+    "Conserva este comprobante para cualquier aclaración sobre tu pedido. " +
+    "¡Consigue 5 facturas y gana un postre gratis! Aplica restricciones.",
+    RX, terminosY + 20, { width: RW, align: "right" }
+  );
 
     doc.end();
     stream.on("finish", resolve);

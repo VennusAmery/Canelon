@@ -74,12 +74,6 @@ export default function CartDrawer() {
           </span>
         </div>
 
-        <div className="cart-puntos">
-          <span>✨ Puntos que ganarás</span>
-          <strong>
-            +{Math.floor(Number(totalPrice) / 20)} puntos
-          </strong>
-        </div>
 
             <button className="btn btn-primary" onClick={() => setShowCheckout(true)}>
               Finalizar pedido
