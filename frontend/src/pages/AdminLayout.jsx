@@ -29,6 +29,7 @@ const LINKS = [
   { to: "/admin/pedidos", label: "Pedidos", icon: ClipboardList },
   { to: "/admin/calendario", label: "Calendario", icon: CalendarDays },
   { to: "/admin/stock", label: "Inventario", icon: Package },
+  { to: "/admin/punto-equilibrio", label: "Viabilidad Financiera", icon: Target},  
   { to: "/admin/usuarios", label: "Crear usuario", icon: UserPlus },
 ];
 
