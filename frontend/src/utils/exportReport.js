@@ -1,3 +1,4 @@
+//frontend/src/utils/exportreport.js
 const COLORS = ["#b9793f", "#e0913c", "#3a2a1e", "#7a6a5c", "#d9c9b7", "#8c5a3a", "#c9a227", "#6f8f72"];
 const stamp = () => new Date().toISOString().slice(0, 10);
 const quetzal = (n) =>
@@ -53,7 +54,7 @@ export function chartToPNG({ type, title, data, prefix = "" }) {
   g.fillStyle = "#3a2a1e"; g.font = "bold 28px Georgia, serif";
   g.fillText(title, 32, 48);
 
-  const items = data.slice(0, 10);
+  const items = data.slice(0, 12);
   const fmt = (v) => `${prefix}${Number(v).toLocaleString("es-GT", { maximumFractionDigits: 2 })}`;
 
   if (type === "pie") {

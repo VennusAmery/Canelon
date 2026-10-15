@@ -1,4 +1,6 @@
+//frontend/src/utils/fullreport.js
 import { API_ORIGIN } from "../api/client.js";
+import { buildBreakEvenReport } from "./breakEvenReport.js";
 
 const get = (path) => {
   const token = localStorage.getItem("admin_token");
@@ -30,15 +32,16 @@ function auto(title, rows) {
 }
 
 export async function buildFullReport() {
-  const [db, stockProd, stockIng, resumen, porCat, porPago, porEstado] = await Promise.all([
-    get("/api/admin/export"),
-    get("/api/admin/stock/productos"),
-    get("/api/admin/stock/ingredientes"),
-    get("/api/admin/ventas/resumen"),
-    get("/api/admin/ventas/por-categoria"),
-    get("/api/admin/ventas/por-metodo-pago"),
-    get("/api/admin/ventas/por-estado"),
-  ]);
+const [db, stockProd, stockIng, resumen, porCat, porPago, porEstado, eq] = await Promise.all([
+  get("/api/admin/export"),
+  get("/api/admin/stock/productos"),
+  get("/api/admin/stock/ingredientes"),
+  get("/api/admin/ventas/resumen"),
+  get("/api/admin/ventas/por-categoria"),
+  get("/api/admin/ventas/por-metodo-pago"),
+  get("/api/admin/ventas/por-estado"),
+  buildBreakEvenReport().catch((e) => { console.error(e); return null; }),
+]);
   if (!db || db.error) throw new Error("No se pudo leer la base de datos.");
 
   // Top productos vendidos (pedidos de la web)
@@ -59,33 +62,40 @@ export async function buildFullReport() {
     title: "Base de datos completa",
     subtitle: "Exportación integral de la información del negocio",
     pdfMaxRows: 150,
-    kpis: [
-      { label: "Órdenes históricas", value: resumen?.total_ordenes ?? "—" },
-      { label: "Ingresos históricos", value: `Q${resumen?.ingresos_totales ?? 0}` },
-      { label: "Pedidos de la web", value: (db.orders || []).length },
-      { label: "Productos en catálogo", value: (db.products || []).length },
-      { label: "Costos fijos / mes", value: `Q${cf.toFixed(2)}` },
-    ],
-    charts: [
-      { type: "bar", title: "Ingresos por categoría", prefix: "Q",
-        data: (porCat || []).map((c) => ({ label: c.categoria, value: Number(c.ingresos) })) },
-      { type: "pie", title: "Métodos de pago",
-        data: (porPago || []).map((c) => ({ label: c.metodo_pago, value: Number(c.ordenes) })) },
-      { type: "pie", title: "Estado de los pedidos",
-        data: (porEstado || []).map((c) => ({ label: c.estado_pedido, value: Number(c.ordenes) })) },
-      { type: "bar", title: "Productos más vendidos (web)", data: top },
-    ],
-    sections: [
-      auto("Pedidos web", db.orders),
-      auto("Detalle de pedidos", db.order_items),
-      auto("Ventas históricas", db.ventas_historicas),
-      auto("Productos", db.products),
-      auto("Variantes", db.product_variants),
-      auto("Opciones", db.product_options),
-      auto("Stock de productos", Array.isArray(stockProd) ? stockProd : []),
-      auto("Stock de ingredientes", Array.isArray(stockIng) ? stockIng : []),
-      auto("Puntos de clientes", db.puntos_clientes),
-      auto("Costos fijos", db.costos_fijos),
-    ].filter(Boolean),
+   kpis: [
+  { label: "Órdenes históricas", value: resumen?.total_ordenes ?? "—" },
+  { label: "Ingresos históricos", value: `Q${resumen?.ingresos_totales ?? 0}` },
+  { label: "Pedidos de la web", value: (db.orders || []).length },
+  { label: "Productos en catálogo", value: (db.products || []).length },
+  { label: "Costos fijos / mes", value: `Q${cf.toFixed(2)}` },
+  // análisis de punto de equilibrio
+  ...(eq?.kpis || []).filter((k) =>
+    ["Margen de contribución", "PE en ventas / mes", "Estado del mes"].includes(k.label)
+  ),
+],
+charts: [
+  { type: "bar", title: "Ingresos por categoría", prefix: "Q",
+    data: (porCat || []).map((c) => ({ label: c.categoria, value: Number(c.ingresos) })) },
+  { type: "pie", title: "Métodos de pago",
+    data: (porPago || []).map((c) => ({ label: c.metodo_pago, value: Number(c.ordenes) })) },
+  { type: "pie", title: "Estado de los pedidos",
+    data: (porEstado || []).map((c) => ({ label: c.estado_pedido, value: Number(c.ordenes) })) },
+  { type: "bar", title: "Productos más vendidos (web)", data: top },
+  // gráficas de punto de equilibrio
+  ...(eq?.charts || []),
+],
+sections: [
+  auto("Pedidos web", db.orders),
+  auto("Detalle de pedidos", db.order_items),
+  auto("Ventas históricas", db.ventas_historicas),
+  auto("Productos", db.products),
+  auto("Variantes", db.product_variants),
+  auto("Opciones", db.product_options),
+  auto("Stock de productos", Array.isArray(stockProd) ? stockProd : []),
+  auto("Stock de ingredientes", Array.isArray(stockIng) ? stockIng : []),
+  auto("Puntos de clientes", db.puntos_clientes),
+  // Costos fijos + Resultado del mes + Historial (reemplaza a auto("Costos fijos", ...))
+  ...(eq?.sections || [auto("Costos fijos", db.costos_fijos)]),
+].filter(Boolean),
   };
 }

@@ -177,3 +177,19 @@
   .eq-card { padding: 20px 16px; }
   .be-modal-row { flex-direction: column; gap: 0; }
 }
+/* ---------- Botones de exportar (solo página Punto de equilibrio) ---------- */
+.eq-page .eq-card .exp-wrap {
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.eq-page .eq-card .exp-error {
+  text-align: right;
+}
+
+@media (max-width: 650px) {
+  .eq-page .eq-card .exp-wrap {
+    justify-content: flex-start;
+  }
+}

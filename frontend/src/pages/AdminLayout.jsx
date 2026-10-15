@@ -27,7 +27,7 @@ const LINKS = [
   { to: "/admin", label: "Resumen", icon: LayoutDashboard, end: true },
   { to: "/admin/pedidos", label: "Pedidos", icon: ClipboardList },
   { to: "/admin/stock", label: "Inventario", icon: Package },
-  { to: "/admin/equilibrio", label: "Punto de equilibrio", icon: Target },
+  { to: "/admin/equilibrio", label: "Viabilidad Financiera", icon: Target },
   { to: "/admin/usuarios", label: "Crear usuario", icon: UserPlus },
 ];
 
